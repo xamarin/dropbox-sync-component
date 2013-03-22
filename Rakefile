@@ -30,7 +30,7 @@ task :default => ["xpkg/xpkg.exe", "binding/DropBoxSync.iOS.dll"] do
 	line = <<-END
 	mono xpkg/xpkg.exe create #{COMPONENT} \
 		--name="Dropbox Sync" \
-		--summary="Give your apps their own private Dropbox client." \
+		--summary="Give your app its own private Dropbox client." \
 		--publisher="Dropbox, Inc." \
 		--website="https://www.dropbox.com/developers/sync" \
 		--details="Details.md" \
