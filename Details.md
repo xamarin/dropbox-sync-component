@@ -1,8 +1,8 @@
-Dropbox Sync allows you to integrate Dropbox services into your own app within minutes. 
+The Dropbox Sync API allows you to give your app its own private Dropbox client and leave the syncing to Dropbox.
 
-- Allows you to Focus on your data. It handles all the caching, retrying, and file change notifications.
+- Focus on your data. The Sync API handles all the caching, retrying, and file change notifications.
 - Writes are local so changes are immediate. The Sync API syncs to Dropbox behind the scenes.
-- Allows your app work great even when offline and automatically syncs when it's back online.
+- Your app works great even when offline and automatically syncs when it's back online.
 
 Here's an example:
 
