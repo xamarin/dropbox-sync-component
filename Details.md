@@ -54,14 +54,14 @@ public override bool OpenUrl (UIApplication application, NSUrl url, string sourc
 
 ### In Info.plist
 
-You'll need to register the url scheme "db-APP_KEY" to complete the
+You'll need to register the url scheme "db-DropboxSyncKey" to complete the
 authentication flow. Double-click on your app's Info.plist file, select
 the Advanced Tab, find the URL Types Section, then click Add URL Type
-and set URL Schemes to db-APP_KEY (i.e.	"db-aaa111bbb2222").
+and set URL Schemes to db-DropboxSyncKey (i.e.	"db-aaa111bbb2222").
 
 ### Link the user
 
-Oncyou e've added the code above, you're ready to link the user's
+Once you've added the code above, you're ready to link the user's
 Dropbox account from your UI. For example, add this snippet to a UI
 event handler in one of your controllers:
 
