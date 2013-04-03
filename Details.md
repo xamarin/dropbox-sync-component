@@ -4,36 +4,36 @@ The Dropbox Sync API allows you to give your app its own private Dropbox client 
 - Writes are local so changes are immediate. The Sync API syncs to Dropbox behind the scenes.
 - Your app works great even when offline and automatically syncs when it's back online.
 
-Here's an example:
 
-##Authenticating with Dropbox
+## Authenticating with Dropbox
 
-You'll need to add snippets of code in the right places to successfully link a user's Dropbox account to your app. Here are all the snippets you'll need for your app:
+Add the following lines of code to link a user's Dropbox account to your
+app:
 
-**AppDelegate.cs**
+### In AppDelegate.cs
 
 ```csharp
 using DropBoxSync.iOS;
 ...
 
 // Get your own App Key and Secret from https://www.dropbox.com/developers/apps
-// Also don't forget to set CFBundleURLSchemes to db-YOUR_APP_KEY in your Info.plist
-const string appKey = "YOUR_APP_KEY";
-const string appSecret = "YOUR_APP_SECRET";
+const string DropboxSyncKey = "YOUR_APP_KEY";
+const string DropboxSyncSecret = "YOUR_APP_SECRET";
 
 public override bool FinishedLaunching (UIApplication app, NSDictionary options)
 {
 	
 	// The account manager stores all the account info. Create this when your app launches
-	var accountMgr = new DBAccountManager (key: appKey, secret: appSecret);
-	DBAccountManager.SetSharedManager (accountMgr);
-	var account = accountMgr.LinkedAccount;
-	
+	var manager = new DBAccountManager (DropboxSyncKey, DropboxSyncSecret);
+	DBAccountManager.SetSharedManager (manager);
+
+	var account = manager.LinkedAccount;
 	if (account != null) {
 		var filesystem = new DBFilesystem (account);
 		DBFilesystem.SetSharedFilesystem (filesystem);
 	}	
-	...
+
+	// ...
 }
 
 public override bool OpenUrl (UIApplication application, NSUrl url, string sourceApplication, NSObject annotation)
@@ -44,20 +44,30 @@ public override bool OpenUrl (UIApplication application, NSUrl url, string sourc
 		DBFilesystem.SetSharedFilesystem (filesystem);
 		Console.WriteLine ("App linked successfully!");
 		return true;
+	} else {
+		Console.WriteLine ("App is not linked");
+		return false;
 	}
-	Console.WriteLine ("App is not linked");
-	return false;
 }
 
 ```
-**Info.plist**
 
-You'll need to register for the url scheme **db-APP_KEY** to complete the authentication flow. The easiest way to do this is to double click on your app's Info.plist file and select the **Advanced Tab** then look for **URL Types Section** then clic **Add URL Type** now set **URL Schemes** to **db-APP_KEY** (i.e.	db-aaa111bbb2222) leave other fields **as is** then save.
+### In Info.plist
 
-Once you've added all the above code, the last thing to do is trigger the link new user flow. Add this snippet to a button in your View Controller to trigger the Link to Dropbox screen.
+You'll need to register the url scheme "db-APP_KEY" to complete the
+authentication flow. Double-click on your app's Info.plist file, select
+the Advanced Tab, find the URL Types Section, then click Add URL Type
+and set URL Schemes to db-APP_KEY (i.e.	"db-aaa111bbb2222").
+
+### Link the user
+
+Oncyou e've added the code above, you're ready to link the user's
+Dropbox account from your UI. For example, add this snippet to a UI
+event handler in one of your controllers:
 
 ```csharp
-DBAccountManager.SharedManager.LinkFromController (NavigationController)
+DBAccountManager.SharedManager.LinkFromController (myController)
 ```
 
-With just these three changes, your app can show the Dropbox OAuth screen and successfully link your account. After linking the account, you should see "App linked successfully" in the console output.
+This will show the Dropbox OAuth screen and ask the user to link their
+account.
