@@ -48,11 +48,8 @@ namespace DropBoxSync.iOS
 		[Export ("initWithAppKey:secret:")]
 		IntPtr Constructor (string key, string secret);
 
-		[Static, Export ("setSharedManager:")]
-		void SetSharedManager (DBAccountManager sharedManager);
-
 		[Static, Export ("sharedManager")]
-		DBAccountManager SharedManager { get; }
+		DBAccountManager SharedManager { get; set; }
 
 		[Export ("linkFromController:")]
 		void LinkFromController (UIViewController rootController);
@@ -161,11 +158,8 @@ namespace DropBoxSync.iOS
 		[Export ("initWithAccount:")]
 		IntPtr Constructor (DBAccount account);
 
-		[Static, Export ("setSharedFilesystem:")]
-		void SetSharedFilesystem (DBFilesystem filesystem);
-
 		[Static, Export ("sharedFilesystem")]
-		DBFilesystem SharedFilesystem { get; }
+		DBFilesystem SharedFilesystem { get; set; }
 
 		[Export ("listFolder:error:")]
 		DBFileInfo [] ListFolder (DBPath path, out DBError error);

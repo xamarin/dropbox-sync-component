@@ -33,10 +33,6 @@
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="monotouch" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
@@ -53,5 +49,10 @@
     <Compile Include="Dropbox.linkwith.cs">
       <DependentUpon>Dropbox.a</DependentUpon>
     </Compile>
+    <Compile Include="Extras.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="monotouch" />
   </ItemGroup>
 </Project>
