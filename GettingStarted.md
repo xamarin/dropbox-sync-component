@@ -18,12 +18,12 @@ public override bool FinishedLaunching (UIApplication app, NSDictionary options)
 	
 	// The account manager stores all the account info. Create this when your app launches
 	var manager = new DBAccountManager (DropboxSyncKey, DropboxSyncSecret);
-	DBAccountManager.SetSharedManager (manager);
+	DBAccountManager.SharedManager = manager;
 
 	var account = manager.LinkedAccount;
 	if (account != null) {
 		var filesystem = new DBFilesystem (account);
-		DBFilesystem.SetSharedFilesystem (filesystem);
+		DBFilesystem.SharedFilesystem = filesystem;
 	}	
 
 	// ...
@@ -34,7 +34,7 @@ public override bool OpenUrl (UIApplication application, NSUrl url, string sourc
 	var account = DBAccountManager.SharedManager.HandleOpenURL (url);
 	if (account != null) {
 		var filesystem = new DBFilesystem (account);
-		DBFilesystem.SetSharedFilesystem (filesystem);
+		DBFilesystem.SharedFilesystem = filesystem;
 		Console.WriteLine ("App linked successfully!");
 		return true;
 	} else {
