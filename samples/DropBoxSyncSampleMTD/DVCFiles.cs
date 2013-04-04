@@ -21,9 +21,7 @@ namespace DropBoxSyncSampleMTD
 		public DVCFiles (DBPath path) : base (UITableViewStyle.Plain, null, true)
 		{
 			this.path = path;
-			DispatchQueue.DefaultGlobalQueue.DispatchAsync (() => {
-				LoadFiles ();
-			});
+			LoadFiles ();
 
 			Root = new RootElement (string.IsNullOrWhiteSpace (path.Name) ? "/" : path.Name) {
 				new Section (){
@@ -98,31 +96,39 @@ namespace DropBoxSyncSampleMTD
 
 		void LoadFiles ()
 		{
-			DBError error;
-			var contents = DBFilesystem.SharedFilesystem.ListFolder (path, out error);
-
-			InvokeOnMainThread (()=> {	
-				Root.Clear ();
-				Root.Add (new Section ());
-			});
-			foreach (DBFileInfo info in contents) {
-				var localinfo = info;
-
-				var filerow = new StyledStringElement (localinfo.Path.Name, () => {
-					if (localinfo.IsFolder) {
-						filesController = new DVCFiles (localinfo.Path);
-						NavigationController.PushViewController (filesController, true);
-					} else {
-						DBError err;
-						var file = DBFilesystem.SharedFilesystem.OpenFile (localinfo.Path, out err);
-						var noteController = new NoteController (file);
-						NavigationController.PushViewController (noteController, true);
+			DBFilesystem.SharedFilesystem.ListFolderAsync (path).ContinueWith (t => {
+				if(t.Result != null)
+				{
+					InvokeOnMainThread (()=> {	
+						Root.Clear ();
+						Root.Add (new Section ());
+					});
+					foreach (DBFileInfo info in t.Result ) {
+						var localinfo = info;
+						
+						var filerow = new StyledStringElement (localinfo.Path.Name, () => {
+							if (localinfo.IsFolder) {
+								InvokeOnMainThread( ()=> {
+									filesController = new DVCFiles (localinfo.Path);
+									NavigationController.PushViewController (filesController, true);
+								});
+							} else {
+								DBFilesystem.SharedFilesystem.OpenFileAsync (localinfo.Path).ContinueWith (r => {
+									if (r.Result != null) {
+										InvokeOnMainThread (() => {
+											var noteController = new NoteController (r.Result);
+											NavigationController.PushViewController (noteController, true);
+										});
+									}
+								});
+							}
+						}) {
+							Accessory = localinfo.IsFolder ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None
+						};
+						InvokeOnMainThread (()=> Root[0].Add (filerow));
 					}
-				}) {
-					Accessory = localinfo.IsFolder ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None
-				};
-				InvokeOnMainThread (()=> Root[0].Add (filerow));
-			}
+				}
+			});
 		}
 	}
 }

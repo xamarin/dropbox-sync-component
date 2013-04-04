@@ -36,12 +36,12 @@ namespace DropBoxSyncSampleMTD
 		{
 			// The account manager stores all the account info. Create this when your app launches
 			var accountMgr = new DBAccountManager (key: appKey, secret: appSecret);
-			DBAccountManager.SetSharedManager (accountMgr);
+			DBAccountManager.SharedManager = accountMgr;
 			var account = accountMgr.LinkedAccount;
 
 			if (account != null) {
 				var filesystem = new DBFilesystem (account);
-				DBFilesystem.SetSharedFilesystem (filesystem);
+				DBFilesystem.SharedFilesystem = filesystem;
 			}
 
 			window = new UIWindow (UIScreen.MainScreen.Bounds);
@@ -59,7 +59,7 @@ namespace DropBoxSyncSampleMTD
 			var account = DBAccountManager.SharedManager.HandleOpenURL (url);
 			if (account != null) {
 				var filesystem = new DBFilesystem (account);
-				DBFilesystem.SetSharedFilesystem (filesystem);
+				DBFilesystem.SharedFilesystem = filesystem;
 				Console.WriteLine ("App linked successfully!");
 				return true;
 			}

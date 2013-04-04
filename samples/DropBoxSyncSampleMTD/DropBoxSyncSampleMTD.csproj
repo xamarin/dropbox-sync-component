@@ -80,10 +80,10 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="monotouch" />
+    <Reference Include="MonoTouch.Dialog-1" />
     <Reference Include="DropBoxSync.iOS">
       <HintPath>..\..\binding\DropBoxSync.iOS.dll</HintPath>
     </Reference>
-    <Reference Include="MonoTouch.Dialog-1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
