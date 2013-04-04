@@ -17,11 +17,11 @@ namespace DropBoxSync.iOS
 			}, path);
 		}
 
-		public Task<DBFileInfo> GetFileInfoAsync (DBPath path)
+		public Task<DBFileInfo> GetFilesAsync (DBPath path)
 		{
 			return Task.Factory.StartNew (p => {
 				DBError err;
-				var results = GetFileInfo ((DBPath)p, out err);
+				var results = GetFiles ((DBPath)p, out err);
 				if (err != null)
 					throw new DBException (err);
 				return results;

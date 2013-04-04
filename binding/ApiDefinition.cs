@@ -165,7 +165,7 @@ namespace DropBoxSync.iOS
 		DBFileInfo [] GetFolder (DBPath path, out DBError error);
 
 		[Export ("fileInfoForPath:error:")]
-		DBFileInfo GetFileInfo (DBPath path, out DBError error);
+		DBFileInfo GetFiles (DBPath path, out DBError error);
 
 		[Export ("openFile:error:")]
 		DBFile OpenFile (DBPath path, out DBError error);
