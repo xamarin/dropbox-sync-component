@@ -100,7 +100,7 @@ namespace DropBoxSyncSampleMTD
 
 		void LoadFiles ()
 		{
-			DBFilesystem.SharedFilesystem.GetFolderAsync (path).ContinueWith (t => {
+			DBFilesystem.SharedFilesystem.ListFolderAsync (path).ContinueWith (t => {
 				if(t.Result != null)
 				{
 					InvokeOnMainThread (()=> {	

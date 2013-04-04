@@ -6,22 +6,22 @@ namespace DropBoxSync.iOS
 {
 	public partial class DBFilesystem : NSObject
 	{
-		public Task<DBFileInfo []> GetFolderAsync (DBPath path)
+		public Task<DBFileInfo []> ListFolderAsync (DBPath path)
 		{
 			return Task.Factory.StartNew (p => {
 				DBError err;
-				var results = GetFolder ((DBPath)p, out err);
+				var results = ListFolder ((DBPath)p, out err);
 				if (err != null)
 					throw new DBException (err);
 				return results;
 			}, path);
 		}
 
-		public Task<DBFileInfo> GetFilesAsync (DBPath path)
+		public Task<DBFileInfo> FileInfoForPathAsync (DBPath path)
 		{
 			return Task.Factory.StartNew (p => {
 				DBError err;
-				var results = GetFiles ((DBPath)p, out err);
+				var results = FileInfoForPath ((DBPath)p, out err);
 				if (err != null)
 					throw new DBException (err);
 				return results;
