@@ -50,6 +50,7 @@
       <DependentUpon>Dropbox.a</DependentUpon>
     </Compile>
     <Compile Include="Extras.cs" />
+    <Compile Include="DBException.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

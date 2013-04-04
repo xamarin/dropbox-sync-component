@@ -162,10 +162,10 @@ namespace DropBoxSync.iOS
 		DBFilesystem SharedFilesystem { get; set; }
 
 		[Export ("listFolder:error:")]
-		DBFileInfo [] ListFolder (DBPath path, out DBError error);
+		DBFileInfo [] GetFolder (DBPath path, out DBError error);
 
 		[Export ("fileInfoForPath:error:")]
-		DBFileInfo FileInfoForPath (DBPath path, out DBError error);
+		DBFileInfo GetFiles (DBPath path, out DBError error);
 
 		[Export ("openFile:error:")]
 		DBFile OpenFile (DBPath path, out DBError error);

@@ -70,33 +70,37 @@ namespace DropBoxSyncSampleMTD
 
 		public void CreateAt (string input)
 		{
-			DBError error;
 			if (!creatingFolder) {
 				string noteFilename = string.Format ("{0}.txt", input);
 				var newPath = path.ChildPath (noteFilename);
-				var file = DBFilesystem.SharedFilesystem.CreateFile (newPath, out error);
-				
-				if (file == null)
-					new UIAlertView ("Unable to create note", "An error has occurred: " + error.Description, null, "Ok", null).Show ();
-				else {
-					var controller = new NoteController (file);
-					NavigationController.PushViewController (controller, true);
-				}
+				DBFilesystem.SharedFilesystem.CreateFileAsync (newPath).ContinueWith (t => {
+					InvokeOnMainThread (()=> {
+						if (t.Result == null)
+							new UIAlertView ("Unable to create note", "An error has occurred", null, "Ok", null).Show ();
+						else {
+							var controller = new NoteController (t.Result);
+							NavigationController.PushViewController (controller, true);
+						}
+					});
+				});
 			} else {
 				var newPath = path.ChildPath (input);
-				bool success = DBFilesystem.SharedFilesystem.CreateFolder (newPath, out error);
-				if (!success)
-					new UIAlertView ("Unable to create folder", "An error has occurred: " + error.Description, null, "Ok", null).Show ();
-				else {
-					var controller = new DVCFiles (newPath);
-					NavigationController.PushViewController (controller, true);
-				}
+				DBFilesystem.SharedFilesystem.CreateFolderAsync (newPath).ContinueWith (t => {
+					InvokeOnMainThread (() => {
+						if (!t.Result)
+							new UIAlertView ("Unable to create folder", "An error has occurred", null, "Ok", null).Show ();
+						else {
+							var controller = new DVCFiles (newPath);
+							NavigationController.PushViewController (controller, true);
+						}
+					});
+				});
 			}
 		}
 
 		void LoadFiles ()
 		{
-			DBFilesystem.SharedFilesystem.ListFolderAsync (path).ContinueWith (t => {
+			DBFilesystem.SharedFilesystem.GetFolderAsync (path).ContinueWith (t => {
 				if(t.Result != null)
 				{
 					InvokeOnMainThread (()=> {	
