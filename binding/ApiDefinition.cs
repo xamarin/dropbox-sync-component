@@ -60,6 +60,9 @@ namespace DropBoxSync.iOS
 		[Export ("linkedAccount")]
 		DBAccount LinkedAccount { get; }
 
+		[Export ("linkedAccounts")]
+		DBAccount [] LinkedAccounts { get; }
+
 		[Export ("addObserver:block:")]
 		void AddObserver (NSObject observer, DBAccountManagerObserverHandler handler);
 		
@@ -193,6 +196,9 @@ namespace DropBoxSync.iOS
 
 		[Export ("status")]
 		DBSyncStatus Status { get; }
+
+		[Export ("addObserver:block:")]
+		bool AddObserver (NSObject observer, DBObserverHandler handler);
 
 		[Export ("addObserver:forPath:block:")]
 		bool AddObserver (NSObject observer, DBPath path, DBObserverHandler handler);

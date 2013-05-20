@@ -8,7 +8,7 @@ CLEAN.include "binding/*.dll"
 CLEAN.include "binding/bin"
 CLEAN.include "binding/obj"
 
-COMPONENT = "dropboxsync-1.0.6.xam"
+COMPONENT = "dropboxsync-1.0.8.xam"
 MONOXBUILD = "/Library/Frameworks/Mono.framework/Commands/xbuild"
 
 file "xpkg/xpkg.exe" do
@@ -20,7 +20,7 @@ file "xpkg/xpkg.exe" do
 end
 
 file "binding/DropBoxSync.iOS.dll" do
-  sh "curl -L 'https://dl.dropbox.com/shz/uf0zf9qary2vag6/sLPJpFD120/Dropbox.framework/Dropbox.framework?token_hash=AAFL7mNbTi_ABTo7c6aHCiFHYUUDD53W5macXwNSWWbmpg&top_level_offset=41&dl=1' > binding/DropBoxSync.zip"
+  sh "curl -L 'https://dl.dropboxusercontent.com/shz/vgu2o1xz6a22ook/gcbNbUrAbw/Dropbox.framework/Dropbox.framework?token_hash=AAH3iDUuocHKrHqmpyXOueLODnxucTI-3vXzKdm_KhD1pQ&top_level_offset=48&dl=1' > binding/DropBoxSync.zip"
   sh "unzip -p binding/DropBoxSync.zip 'Dropbox.framework/Dropbox' > binding/Dropbox.a"
   sh "#{MONOXBUILD} /p:Configuration=Release binding/DropBoxSync.iOS.csproj"
   sh "cp binding/bin/Release/DropBoxSync.iOS.dll binding/DropBoxSync.iOS.dll"
