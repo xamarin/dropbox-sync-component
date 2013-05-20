@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace DropBoxSync.iOS
 {
-	public partial class DBFilesystem : NSObject
+	public partial class DBFilesystem : NSObject, IDisposable
 	{
 		public Task<DBFileInfo []> ListFolderAsync (DBPath path)
 		{
@@ -84,7 +84,7 @@ namespace DropBoxSync.iOS
 		}
 	}
 
-	public partial class DBFile : NSObject
+	public partial class DBFile : NSObject, IDisposable
 	{
 		public Task<NSFileHandle> ReadHandleAsync ()
 		{
@@ -162,6 +162,30 @@ namespace DropBoxSync.iOS
 				return results;
 			}); 
 		}
+	}
+
+	public partial class DBAccount : NSObject, IDisposable
+	{
+	}
+
+	public partial class DBAccountManager : NSObject, IDisposable
+	{
+	}
+
+	public partial class DBFileInfo : NSObject, IDisposable
+	{
+	}
+
+	public partial class DBFileStatus : NSObject, IDisposable
+	{
+	}
+
+	public partial class DBPath : NSObject, IDisposable
+	{
+	}
+
+	public partial class DBAccountInfo : NSObject, IDisposable
+	{
 	}
 }
 
