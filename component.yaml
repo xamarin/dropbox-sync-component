@@ -1,0 +1,11 @@
+version: 1.0.8
+name: Dropbox Sync
+id: dropboxsync
+publisher: Dropbox, Inc.
+publisher-url: https://www.dropbox.com/developers/sync
+summary: Give your app its own private Dropbox client and leave the syncing to Dropbox.
+libraries:
+  ios: source/binding/DropBoxSync.iOS.dll
+samples:
+  "iOS Sample. Demonstrates Dropbox Awesomeness on iOS.": "source/samples/DropBoxSyncSampleMTD.sln"
+
