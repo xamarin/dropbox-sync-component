@@ -28,7 +28,7 @@ end
 
 task :default => ["xpkg/xamarin-component.exe", "binding/DropBoxSync.iOS.dll"] do
 	line = <<-END
-	mono xpkg/xamarin-component.exe create #{COMPONENT} \
+	mono xpkg/xamarin-component.exe create-manually #{COMPONENT} \
 		--name="Dropbox Sync" \
 		--summary="Give your app its own private Dropbox client and leave the syncing to Dropbox." \
 		--publisher="Dropbox, Inc." \
