@@ -11,8 +11,8 @@ CLEAN.include "binding/obj"
 COMPONENT = "dropboxsync-1.0.8.xam"
 MONOXBUILD = "/Library/Frameworks/Mono.framework/Commands/xbuild"
 
-file "xpkg/xpkg.exe" do
-	puts "* Downloading xpkg..."
+file "xpkg/xamarin-component.exe" do
+	puts "* Downloading xamarin-component..."
 	mkdir "xpkg"
 	sh "curl -L https://components.xamarin.com/submit/xpkg > xpkg.zip"
 	sh "unzip -o xpkg.zip -d xpkg"
@@ -26,18 +26,18 @@ file "binding/DropBoxSync.iOS.dll" do
   sh "cp binding/bin/Release/DropBoxSync.iOS.dll binding/DropBoxSync.iOS.dll"
 end
 
-task :default => ["xpkg/xpkg.exe", "binding/DropBoxSync.iOS.dll"] do
+task :default => ["xpkg/xamarin-component.exe", "binding/DropBoxSync.iOS.dll"] do
 	line = <<-END
-	mono xpkg/xpkg.exe create #{COMPONENT} \
+	mono xpkg/xamarin-component.exe create #{COMPONENT} \
 		--name="Dropbox Sync" \
 		--summary="Give your app its own private Dropbox client and leave the syncing to Dropbox." \
 		--publisher="Dropbox, Inc." \
 		--website="https://www.dropbox.com/developers/sync" \
-		--details="Details.md" \
-		--license="License.md" \
-		--getting-started="GettingStarted.md" \
-		--icon="icons/dropboxsync_128x128.png" \
-		--icon="icons/dropboxsync_512x512.png" \
+		--details="component/Details.md" \
+		--license="component/License.md" \
+		--getting-started="component/GettingStarted.md" \
+		--icon="component/icons/dropboxsync_128x128.png" \
+		--icon="component/icons/dropboxsync_512x512.png" \
 		--library="ios":"binding/DropBoxSync.iOS.dll" \
 		--sample="iOS Sample. Demonstrates Dropbox Awesomeness on iOS.":"samples/DropBoxSyncSampleMTD.sln"
 		END
