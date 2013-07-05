@@ -25,7 +25,7 @@ namespace DropBoxSyncSampleMTD
 			ButtonSwitcher ();
 		}
 
-		void ButtonSwitcher ()
+		public void ButtonSwitcher ()
 		{
 			if (DBAccountManager.SharedManager.LinkedAccount == null) {
 				Root = new RootElement ("DropBox Sync") {

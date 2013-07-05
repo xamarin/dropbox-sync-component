@@ -61,6 +61,7 @@ namespace DropBoxSyncSampleMTD
 				var filesystem = new DBFilesystem (account);
 				DBFilesystem.SharedFilesystem = filesystem;
 				Console.WriteLine ("App linked successfully!");
+				loginController.ButtonSwitcher ();
 				return true;
 			}
 			Console.WriteLine ("App is not linked");
