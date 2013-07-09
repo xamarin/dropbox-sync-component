@@ -22,8 +22,8 @@ file "xpkg/xamarin-component.exe" do
 end
 
 file "source/binding/DropBoxSync.iOS.dll" do
-  sh "curl -L 'https://dl.dropboxusercontent.com/shz/vgu2o1xz6a22ook/gcbNbUrAbw/Dropbox.framework/Dropbox.framework?token_hash=AAH3iDUuocHKrHqmpyXOueLODnxucTI-3vXzKdm_KhD1pQ&top_level_offset=48&dl=1' > source/binding/DropBoxSync.zip"
-  sh "unzip -p source/binding/DropBoxSync.zip 'Dropbox.framework/Dropbox' > source/binding/Dropbox.a"
+  sh "curl -L 'http://dl.dropboxusercontent.com/s/qvmbr43p94iszak/dropbox-ios-sync-sdk-2.0-b1.zip' > source/binding/dropbox-ios-sync-sdk-2.0-b1.zip"
+  sh "unzip -p source/binding/dropbox-ios-sync-sdk-2.0-b1.zip 'dropbox-ios-sync-sdk-2.0-b1/Dropbox.framework/Dropbox' > source/binding/Dropbox.a"
   sh "#{MONOXBUILD} /p:Configuration=Release source/binding/DropBoxSync.iOS.csproj"
   sh "cp source/binding/bin/Release/DropBoxSync.iOS.dll source/binding/DropBoxSync.iOS.dll"
 end
