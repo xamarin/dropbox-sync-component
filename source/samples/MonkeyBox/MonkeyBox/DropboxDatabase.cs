@@ -98,6 +98,7 @@ namespace MonkeyBox
 
 		public void DeleteAll ()
 		{
+			populated = false;
 			var table = store.GetTable ("monkeys");
 			DBError error;
 			var results = table.Query (new NSDictionary (), out error);
@@ -131,10 +132,16 @@ namespace MonkeyBox
 			record.Update (monkey.ToDictionary ());
 			store.SyncAsync (null);
 		}
+
 		public void Update()
 		{
 
 			store.SyncAsync (null);
+		}
+
+		public void Reset()
+		{
+			DeleteAll();
 		}
 	}
 

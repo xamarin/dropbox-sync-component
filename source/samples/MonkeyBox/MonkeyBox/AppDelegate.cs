@@ -48,7 +48,7 @@ namespace MonkeyBox
 			// make the window visible
 			window.MakeKeyAndVisible ();
 
-			
+			app.ApplicationSupportsShakeToEdit = true;
 			return true;
 		}
 
@@ -70,7 +70,6 @@ namespace MonkeyBox
 		{
 			var t = Task.Factory.StartNew (() => {
 				DropboxDatabase.Shared.Init ();
-				//DropboxDatabase.Shared.DeleteAll();
 			});
 		}
 	}

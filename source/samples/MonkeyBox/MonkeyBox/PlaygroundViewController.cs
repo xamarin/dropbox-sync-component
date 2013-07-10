@@ -1,7 +1,6 @@
 using System;
 using MonoTouch.UIKit;
 using System.Linq;
-using MonoTouch.CoreImage;
 using System.Drawing;
 using System.Collections.Generic;
 
@@ -24,6 +23,7 @@ namespace MonkeyBox
 			DropboxDatabase.Shared.MonkeysUpdated += HandleMonkeysUpdated;
 			PlayGroundView.UpdateMonkeys (DropboxDatabase.Shared.Monkeys);
 			base.ViewWillAppear (animated);
+			this.BecomeFirstResponder ();
 		}
 		public override void ViewDidDisappear (bool animated)
 		{
@@ -47,7 +47,16 @@ namespace MonkeyBox
 			DropboxDatabase.Shared.Update (monkey);
 		}
 
-
+		public override void MotionEnded (UIEventSubtype motion, UIEvent evt)
+		{
+			base.MotionEnded (motion, evt);
+			DropboxDatabase.Shared.Reset ();
+		}
+		public override bool CanBecomeFirstResponder {
+			get {
+				return true;
+			}
+		}
 
 	}
 

@@ -5,8 +5,12 @@ namespace MonkeyBox
 {
 	public class Monkey
 	{
+		static Random random = new Random();
 		public Monkey ()
 		{
+			Scale = (float)Math.Max(random.NextDouble(),.33);
+			X = (float)random.NextDouble();
+			Y = (float)random.NextDouble();
 		}
 		public string Name {get;set;}
 		public float Rotation {get;set;}
@@ -22,19 +26,19 @@ namespace MonkeyBox
 					Name = "Fred",
 				},
 				new Monkey{
-					Name = "George"
+					Name = "George",
 				},
 				new Monkey {
-					Name = "Hootie"
+					Name = "Hootie",
 				},
 				new Monkey {
-					Name = "Julian"
+					Name = "Julian",
 				},
 				new Monkey {
-					Name = "Nim"
+					Name = "Nim",
 				},
 				new Monkey {
-					Name = "Pepe"
+					Name = "Pepe",
 				}
 			};
 		}
