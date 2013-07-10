@@ -85,7 +85,7 @@
     <Reference Include="System.Core" />
     <Reference Include="monotouch" />
     <Reference Include="DropBoxSync.iOS">
-      <HintPath>..\Components\dropboxsync-1.9\lib\ios\DropBoxSync.iOS.dll</HintPath>
+      <HintPath>..\..\..\binding\DropBoxSync.iOS.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
