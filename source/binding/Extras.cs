@@ -4,6 +4,78 @@ using System.Threading.Tasks;
 
 namespace DropBoxSync.iOS
 {
+	public partial class DBDatastore : NSObject, IDisposable
+	{
+		public static Task<DBDatastore> OpenDefaultStoreForAccountAsync (DBAccount account)
+		{
+			return Task.Factory.StartNew (p => {
+				DBError err;
+				var results = OpenDefaultStoreForAccount ((DBAccount)p, out err);
+				if (err != null)
+					throw new DBException (err);
+				return results;
+			}, account);
+		}
+	}
+
+	public partial class DBDatastoreManager : NSObject, IDisposable
+	{
+		public Task<DBDatastore> OpenDefaultDatastoreAsync ()
+		{
+			return Task.Factory.StartNew (()=> {
+				DBError err;
+				var results = OpenDefaultDatastore (out err);
+				if (err != null)
+					throw new DBException (err);
+				return results;
+			});
+		}
+
+		public Task<string []> ListDatastoreIdsAsync ()
+		{
+			return Task.Factory.StartNew (()=> {
+				DBError err;
+				var results = ListDatastoreIds (out err);
+				if (err != null)
+					throw new DBException (err);
+				return results;
+			});
+		}
+
+		public Task<DBDatastore> OpenDatastoreAsync (string datastoreId)
+		{
+			return Task.Factory.StartNew (p => {
+				DBError err;
+				var results = OpenDatastore ((string)p, out err);
+				if (err != null)
+					throw new DBException (err);
+				return results;
+			}, datastoreId);
+		}
+
+		public Task<DBDatastore> CreateDatastoreAsync ()
+		{
+			return Task.Factory.StartNew (()=> {
+				DBError err;
+				var results = CreateDatastore (out err);
+				if (err != null)
+					throw new DBException (err);
+				return results;
+			});
+		}
+
+		public Task<bool> DeleteDatastoreAsync (string datastoreId)
+		{
+			return Task.Factory.StartNew (p => {
+				DBError err;
+				var results = DeleteDatastore ((string)p, out err);
+				if (err != null)
+					throw new DBException (err);
+				return results;
+			}, datastoreId);
+		}
+	}
+
 	public partial class DBFilesystem : NSObject, IDisposable
 	{
 		public Task<DBFileInfo []> ListFolderAsync (DBPath path)
@@ -50,6 +122,17 @@ namespace DropBoxSync.iOS
 			}, path);
 		}
 
+		public Task<DBFile> OpenThumbnailAsync (DBPath path, DBThumbSize size, DBThumbFormat format)
+		{
+			return Task<DBFile>.Factory.StartNew (() => {
+				DBError err;
+				var results = OpenThumbnail (path, size, format, out err);
+				if (err != null)
+					throw new DBException (err);
+				return results;
+			});
+		}
+
 		public Task<bool> CreateFolderAsync (DBPath path)
 		{
 			return Task.Factory.StartNew (p => {
@@ -77,6 +160,17 @@ namespace DropBoxSync.iOS
 			return Task<bool>.Factory.StartNew (() => {
 				DBError err;
 				var results = MovePath (fromPath, toPath, out err);
+				if (err != null)
+					throw new DBException (err);
+				return results;
+			});
+		}
+
+		public Task<string> FetchShareLinkAsync (DBPath path, bool shorten)
+		{
+			return Task<string>.Factory.StartNew (() => {
+				DBError err;
+				var results = FetchShareLink (path, shorten, out err);
 				if (err != null)
 					throw new DBException (err);
 				return results;
@@ -161,6 +255,41 @@ namespace DropBoxSync.iOS
 					throw new DBException (err);
 				return results;
 			}); 
+		}
+	}
+
+	public partial class DBTable : NSObject, IDisposable
+	{
+		public Task<DBRecord []> QueryAsync (NSDictionary filter)
+		{
+			return Task.Factory.StartNew (p => {
+				DBError err;
+				var results = Query ((NSDictionary)p, out err);
+				if (err != null)
+					throw new DBException (err);
+				return results;
+			}, filter);
+		}
+
+		public Task<DBRecord> GetRecordAsync (string recordId)
+		{
+			return Task.Factory.StartNew (p => {
+				DBError err;
+				var results = GetRecord ((string)p, out err);
+				if (err != null)
+					throw new DBException (err);
+				return results;
+			}, recordId);
+		}
+
+		public Task<DBRecord> GetOrInsertRecordAsync (string recordId, NSDictionary fields, bool inserted, DBError error)
+		{
+			return Task<DBRecord>.Factory.StartNew (() => {
+				var results = GetOrInsertRecord (recordId, fields, inserted, error);
+				if (error != null)
+					throw new DBException (error);
+				return results;
+			});
 		}
 	}
 
