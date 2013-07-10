@@ -10,7 +10,7 @@ CLEAN.include "source/binding/obj"
 CLEAN.include "source/samples/DropBoxSyncSampleMTD/bin"
 CLEAN.include "source/samples/DropBoxSyncSampleMTD/obj"
 
-COMPONENT = "dropboxsync-1.0.8.xam"
+COMPONENT = "dropboxsync-1.9.xam"
 MONOXBUILD = "/Library/Frameworks/Mono.framework/Commands/xbuild"
 
 file "xpkg/xamarin-component.exe" do
