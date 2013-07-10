@@ -13,6 +13,10 @@ namespace MonkeyBox
 
 		public PlaygroundViewController ()
 		{
+			this.Title = "MonkeyBox";
+			this.NavigationItem.RightBarButtonItem = new UIBarButtonItem (UIBarButtonSystemItem.Refresh, (sender,e) => {
+				DropboxDatabase.Shared.Update();
+			});
 		}
 		public override void ViewWillAppear (bool animated)
 		{

@@ -12,7 +12,13 @@ namespace MonkeyBox
 	{
 		public event EventHandler MonkeysUpdated;
 
+		public Monkey[] Monkeys { get; set; }
+
 		static DropboxDatabase shared;
+		
+		NSTimer timer;
+
+		public bool AutoUpdating { get; set; }
 
 		public static DropboxDatabase Shared {
 			get {
@@ -23,12 +29,13 @@ namespace MonkeyBox
 		}
 
 		DBDatastore store;
+
 		public DropboxDatabase ()
 		{
 			Monkeys = new Monkey[0];
 		}
 
-		public void Init()
+		public void Init ()
 		{
 			if (store != null)
 				return;
@@ -36,9 +43,19 @@ namespace MonkeyBox
 			store = DBDatastore.OpenDefaultStoreForAccount (DBAccountManager.SharedManager.LinkedAccount, out error);
 			var sync = store.Sync (null);
 			store.AddObserver (store, () => {
-				LoadData();
+				LoadData ();
 			});
+			AutoUpdating = true;
+			store.BeginInvokeOnMainThread(()=>{
+				timer = NSTimer.CreateRepeatingScheduledTimer(2,()=>{
+					if(!AutoUpdating)
+						return;
+					store.Sync(null);
+				});
+			});
+
 		}
+
 		public Dictionary<string,DBRecord> records = new Dictionary<string, DBRecord> ();
 		public Dictionary<string,Monkey> monkeyDictionary = new Dictionary<string, Monkey> ();
 
@@ -58,44 +75,40 @@ namespace MonkeyBox
 			return task;
 		}
 
-		void ProccessResults(DBRecord[] results)
+		void ProccessResults (DBRecord[] results)
 		{
-			records = results.ToDictionary(x=> x.Fields["Name"].ToString(),x=> x);
-			foreach(var result in results)
-			{
-				var name = result.Fields["Name"].ToString();
+			records = results.ToDictionary (x => x.Fields ["Name"].ToString (), x => x);
+			foreach (var result in results) {
+				var name = result.Fields ["Name"].ToString ();
 				Monkey monkey;
-				monkeyDictionary.TryGetValue(name, out monkey);
-				if(monkey == null)
-				{
-					monkey = result.ToMonkey();
-					monkeyDictionary.Add(name,monkey);
-				}
-				else
-				{
-					monkey.Update(result);
+				monkeyDictionary.TryGetValue (name, out monkey);
+				if (monkey == null) {
+					monkey = result.ToMonkey ();
+					monkeyDictionary.Add (name, monkey);
+				} else {
+					monkey.Update (result);
 				}
 			}
-			Monkeys = monkeyDictionary.Select(x=> x.Value).OrderBy(x=> x.Z).ToArray();
-			store.BeginInvokeOnMainThread(()=>{
-				if(MonkeysUpdated != null)
-					MonkeysUpdated(this,EventArgs.Empty);
+			Monkeys = monkeyDictionary.Select (x => x.Value).OrderBy (x => x.Z).ToArray ();
+			store.BeginInvokeOnMainThread (() => {
+				if (MonkeysUpdated != null)
+					MonkeysUpdated (this, EventArgs.Empty);
 			});
 		}
 
-		public void DeleteAll()
+		public void DeleteAll ()
 		{
 			var table = store.GetTable ("monkeys");
 			DBError error;
 			var results = table.Query (new NSDictionary (), out error);
-			foreach(var result in results)
-			{
-				result.DeleteRecord();
+			foreach (var result in results) {
+				result.DeleteRecord ();
 			}
-			store.Sync(null);
+			store.Sync (null);
 		}
 
 		bool populated = false;
+
 		void populateMonkeys ()
 		{
 			if (populated)
@@ -105,20 +118,24 @@ namespace MonkeyBox
 			var table = store.GetTable ("monkeys");
 			foreach (var monkey in Monkeys) {
 				bool inserted = false;
-				table.GetOrInsertRecord(monkey.Name,monkey.ToDictionary (),inserted,new DBError());
+				table.GetOrInsertRecord (monkey.Name, monkey.ToDictionary (), inserted, new DBError ());
 			}
 			store.Sync (null);
 
 		}
-		public void Update(Monkey monkey)
+
+		public void Update (Monkey monkey)
 		{
 			DBRecord record;
 			records.TryGetValue (monkey.Name, out record);
 			record.Update (monkey.ToDictionary ());
 			store.SyncAsync (null);
 		}
+		public void Update()
+		{
 
-		public Monkey[] Monkeys { get; set; }
+			store.SyncAsync (null);
+		}
 	}
 
 	public static class DropboxHelper
@@ -141,7 +158,7 @@ namespace MonkeyBox
 				new NSString(monkey.Y.ToString()),
 				new NSString(monkey.Z.ToString()),
 			};
-			return NSDictionary.FromObjectsAndKeys(values,keys);
+			return NSDictionary.FromObjectsAndKeys (values, keys);
 		}
 
 		public static Monkey ToMonkey (this DBRecord record)
@@ -150,7 +167,7 @@ namespace MonkeyBox
 			
 		}
 
-		public static Monkey Update( this Monkey monkey, DBRecord record)
+		public static Monkey Update (this Monkey monkey, DBRecord record)
 		{
 			monkey.Name = record.Fields [new NSString ("Name")].ToString ();
 			monkey.Rotation = float.Parse (record.Fields [new NSString ("Rotation")].ToString ());

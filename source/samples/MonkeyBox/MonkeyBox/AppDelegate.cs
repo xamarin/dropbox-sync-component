@@ -34,7 +34,7 @@ namespace MonkeyBox
 			// create a new window instance based on the screen size
 			window = new UIWindow (UIScreen.MainScreen.Bounds);
 
-			window.RootViewController = new PlaygroundViewController ();
+			window.RootViewController = new UINavigationController (new PlaygroundViewController ());
 
 			Task.Factory.StartNew (() => {
 				this.BeginInvokeOnMainThread (() => {
