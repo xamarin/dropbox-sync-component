@@ -231,8 +231,86 @@ store.Sync (null);
 
 You can query the records in a table to get a subset of records that match a set of field names and values you specify. The query method takes a set of conditions that the fields of a record must match to be returned in the result set. For each included condition, all records must have a field with that name and that field's value must be exactly equal to the specified value. For strings, this is a case-sensitive comparison (e.g. "abc" won't match "ABC").
 
+```csharp
+DBRecord [] results = tasksTbl.Query (NSDictionary.FromObjectAndKey (new NSString ("No"), new NSString ("completed")), error);
+DBRecord firstResult = results [0];
+```
 
+The records that meet the specified query are not returned in any guaranteed order. The entire result set is returned so you may apply sort in memory after the request completes.
 
+If no condition set is provided, the query will return every record in the table.
+
+```csharp
+DBRecord [] results = tasksTbl.Query (null, error);
+```
+
+## Using observers
+
+A datastore will receive changes from other instances of your app when you call sync. For some apps, the frequency of updates will be low; others may be rapid-fire. In either case, your app should respond as soon as those changes happen by updating the state of your app. You can do this by registering sync status observers.
+
+```csharp
+store.AddObserver (store, () => {
+	if (store.Status == DBDatastoreStatus.Incoming) {
+		// Handle the updated data
+	}
+});
+```
+
+The observer's handler is called whenever the status of the datastore changes, which includes downloading or uploading changes. It is also called when there are changes ready to be applied to the local state.
+
+Checking store.Status in the handler lets you figure out when there are new changes that your app should respond to. If there are changes, calling sync will apply those changes to the datastore. sync will also return a dictionary of table IDs to sets of records that changed as a result of the sync. Your app can update based on the set of changed records or you can simply query the new states of the tables and update your app's views with the results.
+
+## Records and fields
+
+The record is the smallest grouping of data in a datastore. It combines a set of fields to make a useful set of information within a table.
+
+## Record IDs
+
+Each record has a string ID. An ID can be provided when a record is created, or one will be automatically generated and assigned if none is provided. Once a record is created, the ID cannot be changed.
+
+Other records can refer to a given record by storing its ID. This is similar to the concept of a foreign key in SQL databases.
+
+## Field types
+
+Records can contain a variety of field types. Earlier in this tutorial, you saw strings and booleans, but you can also specify a number of other types. Here is a complete list of all supported types:
+
+- String
+- Boolean
+- Integer – 64 bits, signed
+- Floating point – IEEE double
+- Date – POSIX-like timestamp stored with millisecond precision.
+- Bytes – Arbitrary data, which is treated as binary, such as thumbnail images and compressed data. Individual records can be up to 100KB, which limits the size of the blob. If you want to store larger files, you should use the Sync API and reference the paths to those files in your records. If you want to store larger files, you should use the Sync API and reference the paths to those files in your records.
+- List – A special value that can contain other values, though not other lists. Lists are described in more detail below.
+
+## Lists and List Operations
+
+Lists are special field values. They contain an ordered list of other values, though not other lists. Lists can be manipulated via four list operations: put (i.e. replace), move, insert, and delete. These list operations allow Dropbox to handle merging changes to the structure of the list automatically.
+
+## Storage size limits
+
+The overall size of a datastore is calculated by summing the sizes of all values of all fields. Your app can store up to 5MB of data across all its datastores without counting against the user's storage quota. Any data beyond the first 5MB is factored into the user's Dropbox storage quota, and writing can be limited in these cases when a user is over quota.
+
+## Customizing conflict resolution
+
+Datastores automatically merge changes on a per-field basis. If, for example, a user were to edit the taskname of a task on one device and the completed status of that same task on another device, the Datastore API would merge these changes without a conflict.
+
+Sometimes, however, there will be simultaneous changes to the same field of the same record, and this requires conflict resolution. For example, if a user were to edit the completed status of a task on two different devices while offline, it's unclear how those changes should be merged when the devices come back online. Because of this ambiguity, app developers can choose what conflict resolution rule they want to follow.
+
+To set the conflict resolution rule, call the SetResolutionRule () method on a table, and pass in the name of a field and the resolution rule you want to apply to that field.
+
+```csharp
+tasksTbl.SetResolutionRule (DBResolutionRule.Local, "completed");
+```
+
+There are five available resolution rules that affect what happens when a remote change conflicts with a local change:
+
+- **DBResolutionRule.Remote** – The remote value will be chosen. This is the default behavior for all fields.
+- **DBResolutionRule.Local** – The local value of the field will be chosen.
+- **DBResolutionRule.Max** – The greater of the two changes will be chosen.
+- **DBResolutionRule.Min** – The lesser of the two changes will be chosen.
+- **DBResolutionRule.Sum** – Additions and subtractions to the value will be preserved and combined.
+
+**Note that resolution rules don't persist, so you should set any custom resolution rules after opening a datastore but before the first time you sync.**
 
 ## Documentation
 
