@@ -302,6 +302,15 @@ namespace DropBoxSync.iOS
 		}
 	}
 
+	public partial class DBRecord : NSObject, IDisposable
+	{
+		public NSObject this [string key]
+		{
+			get{ return this.ObjectForKey (key);}
+			set{ this.SetObject (value,key);}
+		}
+	}
+
 	public partial class DBAccount : NSObject, IDisposable
 	{
 	}
