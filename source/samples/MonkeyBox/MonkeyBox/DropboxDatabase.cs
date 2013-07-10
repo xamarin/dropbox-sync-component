@@ -47,7 +47,7 @@ namespace MonkeyBox
 			});
 			AutoUpdating = true;
 			store.BeginInvokeOnMainThread(()=>{
-				timer = NSTimer.CreateRepeatingScheduledTimer(2,()=>{
+				timer = NSTimer.CreateRepeatingScheduledTimer(1,()=>{
 					if(!AutoUpdating)
 						return;
 					store.Sync(null);

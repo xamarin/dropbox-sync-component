@@ -116,5 +116,8 @@
     <BundleResource Include="Resources\Nim%402x.png" />
     <BundleResource Include="Resources\Pepe.png" />
     <BundleResource Include="Resources\Pepe%402x.png" />
+    <BundleResource Include="Resources\Default%402x.png" />
+    <BundleResource Include="Resources\Default.png" />
+    <BundleResource Include="Resources\Default-568h%402x-1.png" />
   </ItemGroup>
 </Project>
