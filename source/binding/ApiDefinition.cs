@@ -90,7 +90,7 @@ namespace DropBoxSync.iOS
 		DBTable GetTable (string tableId);
 
 		[Export ("sync:")]
-		NSDictionary Sync (DBError error);
+		NSDictionary Sync ([NullAllowed] DBError error);
 
 		[Export ("open")]
 		bool Open { [Bind ("isOpen")] get; }
