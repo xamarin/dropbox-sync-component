@@ -16,6 +16,15 @@ namespace DropBoxSync.iOS
 				return results;
 			}, account);
 		}
+
+		public Task<NSDictionary> SyncAsync (DBError error)
+		{
+			return Task.Factory.StartNew (p => {
+				var results = Sync ((DBError)p);
+				return results;
+			}, error);
+		}
+
 	}
 
 	public partial class DBDatastoreManager : NSObject, IDisposable
