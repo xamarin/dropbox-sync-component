@@ -117,11 +117,4 @@
     <BundleResource Include="Resources\Pepe.png" />
     <BundleResource Include="Resources\Pepe%402x.png" />
   </ItemGroup>
-  <ItemGroup>
-    <XamarinComponentReference Include="dropboxsync">
-      <InstallationInProgress>False</InstallationInProgress>
-      <Version>1.9</Version>
-      <Visible>False</Visible>
-    </XamarinComponentReference>
-  </ItemGroup>
 </Project>

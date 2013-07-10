@@ -7,6 +7,6 @@ summary: Give your app its own private Dropbox client and leave the syncing to D
 libraries:
   ios: source/binding/DropBoxSync.iOS.dll
 samples:
-  - "iOS Sample. Demonstrates Dropbox Awesomeness on iOS.": "source/samples/DropBoxSyncSampleMTD/DropBoxSyncSampleMTD.sln"
-  - "iOS MonkeyBox. Demonstrates Dropbox Datastore Awesomeness on iOS.": "source/samples/MonkeyBox/MonkeyBox.sln"
+  "iOS Sample. Demonstrates Dropbox Awesomeness on iOS.": "source/samples/DropBoxSyncSampleMTD/DropBoxSyncSampleMTD.sln"
+  "iOS MonkeyBox. Demonstrates Dropbox Datastore Awesomeness on iOS.": "source/samples/MonkeyBox/MonkeyBox.sln"
 
