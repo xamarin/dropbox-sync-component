@@ -160,6 +160,80 @@ To stop listening for updates:
 file.RemoveObserver (this);
 ```
 
+## Creating a datastore and your first table
+
+With a DBAccount in hand, the next step is to open the default datastore. Each app has its own default datastore per user.
+
+```csharp
+DBDatastore store = DBDatastore.OpenDefaultStoreForAccount (account, out error);
+```
+
+In order to store records in a datastore, you'll need to put them in a table. Let's define a table named "tasks":
+
+```csharp
+DBTable tasksTbl = store.GetTable ("people");
+```
+
+You've got a datastore manager, a datastore for your app, and a table for all the tasks you're about to make. Let's start storing some data.
+
+## Working with records
+
+A record is a set of name and value pairs called fields, similar in concept to a dictionary. Records in the same table can have different combinations of fields; there's no schema on the table which contains them. In fact, the record is created by first creating a dictionary.
+
+```csharp
+var keys = new NSString[] {
+	new NSString("taskname"),
+	new NSString("completed")
+};
+var values = new NSString[] {
+	new NSString("Buy milk"),
+	new NSString("No")
+};
+
+NSDictionary data = NSDictionary.FromObjectsAndKeys (values, keys);
+
+DBRecord firstTask = tasksTbl.Insert (data);
+```
+
+This task is now in memory, but hasn't been persisted to storage or synced to Dropbox. Thankfully, that's simple:
+
+```csharp
+store.Sync (null);
+```
+
+Sync may be a straightforward method, but it wraps some powerful functionality. Sync both saves all of your local changes and applies any remote changes as well, automatically merging and dealing with conflicts along the way. Sync even works offline; you won't apply any remote changes, but your local changes will be saved to persistent storage and synced to Dropbox when the device comes back online.
+
+Once syncing completes, visit the [datastore web inspector](https://www.dropbox.com/developers/apps/datastores) and you should see your newly created task.
+
+Accessing data from a record is straightforward:
+
+```csharp
+string taskname = (NSString) firstTask ["taskname"];
+```
+
+Editing tasks is just as easy. This is how you can mark the first result as completed:
+
+```csharp
+firstTask["completed"] = "Yes";
+store.Sync (null);
+```
+
+After the edit, calling sync will commit the edits locally and then sync them to Dropbox.
+
+Finally, if you want to remove the record completely, just call DeleteRecord ():
+
+```csharp
+firstTask.DeleteRecord ();
+store.Sync (null);
+```
+
+## Querying records
+
+You can query the records in a table to get a subset of records that match a set of field names and values you specify. The query method takes a set of conditions that the fields of a record must match to be returned in the result set. For each included condition, all records must have a field with that name and that field's value must be exactly equal to the specified value. For strings, this is a case-sensitive comparison (e.g. "abc" won't match "ABC").
+
+
+
+
 ## Documentation
 
 To explore the full Dropbox Sync API, check out our [iOS SDK documentation](https://www.dropbox.com/developers/sync/docs/ios).

@@ -421,10 +421,10 @@ namespace DropBoxSync.iOS
 		bool IsValidId (string tableId);
 
 		[Export ("query:error:")]
-		DBRecord [] Query (NSDictionary filter, out DBError error);
+		DBRecord [] Query ([NullAllowed] NSDictionary filter, out DBError error);
 
 		[Export ("getRecord:error:")]
-		DBRecord GetRecord (string recordId, out DBError error);
+		DBRecord GetRecord ([NullAllowed] string recordId, out DBError error);
 
 		[Export ("getOrInsertRecord:fields:inserted:error:")] // TODO: Async
 		DBRecord GetOrInsertRecord (string recordId, NSDictionary fields, bool inserted, DBError error);
