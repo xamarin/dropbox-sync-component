@@ -64,12 +64,7 @@ task :default => ["xpkg/xamarin-component.exe", "source/binding/iOS/DropBoxSync.
 	puts "* Created #{COMPONENT}"
 end
 
-task :prepareios => "source/binding/iOS/DropBoxSync.iOS.dll" do
+task :prepare => ["source/binding/iOS/DropBoxSync.iOS.dll", "source/binding/Android/DropboxSync.Android.dll"] do
   puts "\n\n"
-  puts "Binding project prepared, now you can open DropBoxSync.iOS.csproj and samples in Xamarin Studio"
-end
-
-task :preparedroid => "source/binding/Android/DropboxSync.Android.dll" do
-  puts "\n\n"
-  puts "Binding Android project prepared, now you can open DropboxSync.Android.csproj in Xamarin Studio"
+  puts "Binding projects prepared, now you can open projects without any missing files errors"
 end
