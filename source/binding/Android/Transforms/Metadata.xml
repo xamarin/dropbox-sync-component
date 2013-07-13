@@ -1,0 +1,44 @@
+<metadata>
+	<!--
+  This sample removes the class: android.support.v4.content.AsyncTaskLoader.LoadTask:
+  <remove-node path="/api/package[@name='android.support.v4.content']/class[@name='AsyncTaskLoader.LoadTask']" />
+  
+  This sample removes the method: android.support.v4.content.CursorLoader.loadInBackground:
+  <remove-node path="/api/package[@name='android.support.v4.content']/class[@name='CursorLoader']/method[@name='loadInBackground']" />
+  -->
+  
+ <!-- Visibility Change -->
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='CoreClient']" name="visibility">public</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAtom']" name="visibility">public</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxValue']" name="visibility">public</attr>
+
+<!-- Namespace Normalization -->
+	<attr path="/api/package[@name='com.dropbox.client2.android']" name="managedName">DropboxSync.Android.Client2</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']" name="managedName">DropboxSync.Android</attr>
+
+<!-- Class Normalization -->	
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccount']" name="managedName">DBAccount</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccountInfo']" name="managedName">DBAccountInfo</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccountManager']" name="managedName">DBAccountManager</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAtom']" name="managedName">DBAtom</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAuthActivity']" name="managedName">DBAuthActivity</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxDatastore']" name="managedName">DBDatastore</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxDatastoreManager']" name="managedName">DBDatastoreManager</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxDatastoreStatus']" name="managedName">DBDatastoreStatus</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxException']" name="managedName">DBException</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxFields']" name="managedName">DBFields</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxFile']" name="managedName">DBFile</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxFileInfo']" name="managedName">DBFileInfo</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxFileStatus']" name="managedName">DBFileStatus</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxFileSystem']" name="managedName">DBFileSystem</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxList']" name="managedName">DBList</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxPath']" name="managedName">DBPath</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxRecord']" name="managedName">DBRecord</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxSyncService']" name="managedName">DBSyncService</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxSyncStatus']" name="managedName">DBSyncStatus</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxTable']" name="managedName">DBTable</attr>
+	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxValue']" name="managedName">DBValue</attr>
+	
+<!-- Interface Normalization -->	
+	<attr path="/api/package[@name='com.dropbox.sync.android']/interface[@name='DbxFileSystem.PathListener']" name="managedName">DBFileSystem.IPathListener</attr>
+</metadata>

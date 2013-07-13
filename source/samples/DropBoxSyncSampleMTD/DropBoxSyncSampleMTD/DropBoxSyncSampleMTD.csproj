@@ -82,7 +82,7 @@
     <Reference Include="monotouch" />
     <Reference Include="MonoTouch.Dialog-1" />
     <Reference Include="DropBoxSync.iOS">
-      <HintPath>..\..\..\binding\DropBoxSync.iOS.dll</HintPath>
+      <HintPath>..\..\..\binding\iOS\DropBoxSync.iOS.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
