@@ -48,6 +48,9 @@ namespace DropBoxSync.iOS
 	[BaseType (typeof (NSObject))]
 	interface DBAccountManager {
 
+		[Field ("kDBSDKVersion", "__Internal")]
+		NSString SdkVersion { get; }
+
 		[Export ("initWithAppKey:secret:")]
 		IntPtr Constructor (string key, string secret);
 
@@ -90,7 +93,7 @@ namespace DropBoxSync.iOS
 		DBTable GetTable (string tableId);
 
 		[Export ("sync:")]
-		NSDictionary Sync ([NullAllowed] DBError error);
+		NSDictionary Sync (out DBError error);
 
 		[Export ("open")]
 		bool Open { [Bind ("isOpen")] get; }
@@ -120,8 +123,8 @@ namespace DropBoxSync.iOS
 		[Export ("openDefaultDatastore:")]
 		DBDatastore OpenDefaultDatastore (out DBError error);
 
-		[Export ("listDatastoreIds:")]
-		string [] ListDatastoreIds (out DBError error);
+		[Export ("listDatastores:")]
+		DBDatastoreInfo [] ListDatastores (out DBError error);
 
 		[Export ("openDatastore:error:")]
 		DBDatastore OpenDatastore (string datastoreId, out DBError error);
@@ -321,23 +324,26 @@ namespace DropBoxSync.iOS
 		[Export ("objectAtIndexedSubscript:")]
 		NSObject ObjectAtIndexedSubscript (uint index);
 
-		[Export ("insertObject:atIndex:")]
+		[Export ("insertObject:atIndex:")][PostGet ("Values")]
 		void InsertObject (NSObject obj, uint index);
 
-		[Export ("removeObjectAtIndex:")]
+		[Export ("removeObjectAtIndex:")][PostGet ("Values")]
 		void RemoveObjectAtIndex (uint index);
 
-		[Export ("addObject:")]
+		[Export ("addObject:")][PostGet ("Values")]
 		void AddObject (NSObject id);
 
-		[Export ("removeLastObject")]
+		[Export ("removeLastObject")][PostGet ("Values")]
 		void RemoveLastObject ();
 
-		[Export ("replaceObjectAtIndex:withObject:")]
+		[Export ("replaceObjectAtIndex:withObject:")][PostGet ("Values")]
 		void ReplaceObjectAtIndex (uint index, NSObject obj);
 
-		[Export ("setObject:atIndexedSubscript:")]
+		[Export ("setObject:atIndexedSubscript:")][PostGet ("Values")]
 		void SetObject (NSObject obj, uint index);
+
+		[Export ("moveObjectAtIndex:toIndex:")][PostGet ("Values")]
+		void MoveObjectAtIndex (uint oldIndex, uint newIndex);
 
 		[Export ("values")]
 		NSObject [] Values { get; }
@@ -426,8 +432,8 @@ namespace DropBoxSync.iOS
 		[Export ("getRecord:error:")]
 		DBRecord GetRecord ([NullAllowed] string recordId, out DBError error);
 
-		[Export ("getOrInsertRecord:fields:inserted:error:")] // TODO: Async
-		DBRecord GetOrInsertRecord (string recordId, NSDictionary fields, bool inserted, DBError error);
+		[Export ("getOrInsertRecord:fields:inserted:error:")]
+		DBRecord GetOrInsertRecord (string recordId, NSDictionary fields, bool inserted, out DBError error);
 
 		[Export ("insert:")]
 		DBRecord Insert (NSDictionary fields);
@@ -440,6 +446,13 @@ namespace DropBoxSync.iOS
 
 		[Export ("datastore")]
 		DBDatastore Datastore { get; }
+	}
+
+	[BaseType (typeof (NSObject))]
+	interface DBDatastoreInfo {
+
+		[Export ("datastoreId")]
+		string DatastoreId { get; }
 	}
 }
 

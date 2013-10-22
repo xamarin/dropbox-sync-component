@@ -17,14 +17,16 @@ namespace DropBoxSync.iOS
 			}, account);
 		}
 
-		public Task<NSDictionary> SyncAsync (DBError error)
+		public Task<NSDictionary> SyncAsync ()
 		{
-			return Task.Factory.StartNew (p => {
-				var results = Sync ((DBError)p);
+			return Task.Factory.StartNew (() => {
+				DBError err;
+				var results = Sync (out err);
+				if (err != null)
+					throw new DBException (err);
 				return results;
-			}, error);
+			});
 		}
-
 	}
 
 	public partial class DBDatastoreManager : NSObject, IDisposable
@@ -40,11 +42,11 @@ namespace DropBoxSync.iOS
 			});
 		}
 
-		public Task<string []> ListDatastoreIdsAsync ()
+		public Task<DBDatastoreInfo []> ListDatastoresAsync ()
 		{
 			return Task.Factory.StartNew (()=> {
 				DBError err;
-				var results = ListDatastoreIds (out err);
+				var results = ListDatastores (out err);
 				if (err != null)
 					throw new DBException (err);
 				return results;
@@ -291,12 +293,13 @@ namespace DropBoxSync.iOS
 			}, recordId);
 		}
 
-		public Task<DBRecord> GetOrInsertRecordAsync (string recordId, NSDictionary fields, bool inserted, DBError error)
+		public Task<DBRecord> GetOrInsertRecordAsync (string recordId, NSDictionary fields, bool inserted)
 		{
 			return Task<DBRecord>.Factory.StartNew (() => {
-				var results = GetOrInsertRecord (recordId, fields, inserted, error);
-				if (error != null)
-					throw new DBException (error);
+				DBError err;
+				var results = GetOrInsertRecord (recordId, fields, inserted, out err);
+				if (err != null)
+					throw new DBException (err);
 				return results;
 			});
 		}

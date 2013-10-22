@@ -2,6 +2,7 @@ using System;
 
 namespace DropBoxSync.iOS
 {
+	[Flags]
 	public enum DBDatastoreStatus : uint
 	{
 		Connected = 1 << 0, // The API is connected with the server
