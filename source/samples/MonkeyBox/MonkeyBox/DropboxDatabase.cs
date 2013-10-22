@@ -41,7 +41,7 @@ namespace MonkeyBox
 				return;
 			DBError error;
 			store = DBDatastore.OpenDefaultStoreForAccount (DBAccountManager.SharedManager.LinkedAccount, out error);
-			var sync = store.Sync (null);
+			var sync = store.Sync (out error);
 			store.AddObserver (store, () => {
 				LoadData ();
 			});
@@ -50,7 +50,7 @@ namespace MonkeyBox
 				timer = NSTimer.CreateRepeatingScheduledTimer(1,()=>{
 					if(!AutoUpdating)
 						return;
-					store.Sync(null);
+					store.Sync (out error);
 				});
 			});
 
@@ -105,7 +105,7 @@ namespace MonkeyBox
 			foreach (var result in results) {
 				result.DeleteRecord ();
 			}
-			store.Sync (null);
+			store.Sync (out error);
 		}
 
 		bool populated = false;
@@ -116,12 +116,13 @@ namespace MonkeyBox
 				return;
 			populated = true;
 			Monkeys = Monkey.GetAllMonkeys ();
+			DBError error;
 			var table = store.GetTable ("monkeys");
 			foreach (var monkey in Monkeys) {
 				bool inserted = false;
-				table.GetOrInsertRecord (monkey.Name, monkey.ToDictionary (), inserted, new DBError ());
+				table.GetOrInsertRecord (monkey.Name, monkey.ToDictionary (), inserted, out error);
 			}
-			store.Sync (null);
+			store.Sync (out error);
 
 		}
 
@@ -130,13 +131,12 @@ namespace MonkeyBox
 			DBRecord record;
 			records.TryGetValue (monkey.Name, out record);
 			record.Update (monkey.ToDictionary ());
-			store.SyncAsync (null);
+			store.SyncAsync ();
 		}
 
 		public void Update()
 		{
-
-			store.SyncAsync (null);
+			store.SyncAsync ();
 		}
 
 		public void Reset()
