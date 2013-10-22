@@ -21,7 +21,8 @@ CLEAN.include "source/binding/Android/Jars/armeabi-v7a"
 CLEAN.include "source/binding/Android/Jars/mips"
 CLEAN.include "source/binding/Android/Jars/x86"
 
-COMPONENT = "dropboxsync-1.9.xam"
+VERSION="2.0.2"
+COMPONENT = "dropboxsync-#{VERSION}.xam"
 MONOXBUILD = "/Library/Frameworks/Mono.framework/Commands/xbuild"
 
 file "xpkg/xamarin-component.exe" do
@@ -33,23 +34,23 @@ file "xpkg/xamarin-component.exe" do
 end
 
 file "source/binding/iOS/DropBoxSync.iOS.dll" do
-  sh "curl -L 'http://dl.dropboxusercontent.com/s/qvmbr43p94iszak/dropbox-ios-sync-sdk-2.0-b1.zip' > source/binding/iOS/dropbox-ios-sync-sdk-2.0-b1.zip"
-  sh "unzip -p source/binding/iOS/dropbox-ios-sync-sdk-2.0-b1.zip 'dropbox-ios-sync-sdk-2.0-b1/Dropbox.framework/Dropbox' > source/binding/iOS/Dropbox.a"
+  sh "curl -L 'https://dl.dropboxusercontent.com/s/bq1764wzfhlfeqt/dropbox-ios-sync-sdk-2.0.2.zip' > source/binding/iOS/dropbox-ios-sync-sdk-#{VERSION}.zip"
+  sh "unzip -p source/binding/iOS/dropbox-ios-sync-sdk-#{VERSION}.zip 'dropbox-ios-sync-sdk-#{VERSION}/Dropbox.framework/Dropbox' > source/binding/iOS/Dropbox.a"
   sh "#{MONOXBUILD} /p:Configuration=Release source/binding/iOS/DropBoxSync.iOS.csproj"
   sh "cp source/binding/iOS/bin/Release/DropBoxSync.iOS.dll source/binding/iOS/DropBoxSync.iOS.dll"
 end
 
 file "source/binding/Android/DropboxSync.Android.dll" do
-  sh "curl -L 'http://dl.dropboxusercontent.com/s/lkyp4mj0vhjay05/dropbox-android-sync-sdk-2.0.0-b2.zip' > source/binding/Android/dropbox-android-sync-sdk-2.0.0-b2.zip"
+  sh "curl -L 'https://dl.dropboxusercontent.com/s/zsr4dns0dk69uym/dropbox-android-sync-sdk-2.0.2.zip' > source/binding/Android/dropbox-android-sync-sdk-#{VERSION}.zip"
   sh "mkdir -p source/binding/Android/Jars/armeabi/"
   sh "mkdir -p source/binding/Android/Jars/armeabi-v7a/"
   sh "mkdir -p source/binding/Android/Jars/mips/"
   sh "mkdir -p source/binding/Android/Jars/x86/"
-  sh "unzip -p source/binding/Android/dropbox-android-sync-sdk-2.0.0-b2.zip 'dropbox-android-sync-sdk-2.0.0-b2/libs/armeabi/libDropboxSync.so' > source/binding/Android/Jars/armeabi/libDropboxSync.so"
-  sh "unzip -p source/binding/Android/dropbox-android-sync-sdk-2.0.0-b2.zip 'dropbox-android-sync-sdk-2.0.0-b2/libs/armeabi/libDropboxSync.so' > source/binding/Android/Jars/armeabi-v7a/libDropboxSync.so"
-  sh "unzip -p source/binding/Android/dropbox-android-sync-sdk-2.0.0-b2.zip 'dropbox-android-sync-sdk-2.0.0-b2/libs/mips/libDropboxSync.so' > source/binding/Android/Jars/mips/libDropboxSync.so"
-  sh "unzip -p source/binding/Android/dropbox-android-sync-sdk-2.0.0-b2.zip 'dropbox-android-sync-sdk-2.0.0-b2/libs/x86/libDropboxSync.so' > source/binding/Android/Jars/x86/libDropboxSync.so"
-  sh "unzip -p source/binding/Android/dropbox-android-sync-sdk-2.0.0-b2.zip 'dropbox-android-sync-sdk-2.0.0-b2/libs/dropbox-sync-sdk-android.jar' > source/binding/Android/Jars/dropbox-sync-sdk-android.jar"
+  sh "unzip -p source/binding/Android/dropbox-android-sync-sdk-#{VERSION}.zip 'dropbox-android-sync-sdk-#{VERSION}/libs/armeabi/libDropboxSync.so' > source/binding/Android/Jars/armeabi/libDropboxSync.so"
+  sh "unzip -p source/binding/Android/dropbox-android-sync-sdk-#{VERSION}.zip 'dropbox-android-sync-sdk-#{VERSION}/libs/armeabi/libDropboxSync.so' > source/binding/Android/Jars/armeabi-v7a/libDropboxSync.so"
+  sh "unzip -p source/binding/Android/dropbox-android-sync-sdk-#{VERSION}.zip 'dropbox-android-sync-sdk-#{VERSION}/libs/mips/libDropboxSync.so' > source/binding/Android/Jars/mips/libDropboxSync.so"
+  sh "unzip -p source/binding/Android/dropbox-android-sync-sdk-#{VERSION}.zip 'dropbox-android-sync-sdk-#{VERSION}/libs/x86/libDropboxSync.so' > source/binding/Android/Jars/x86/libDropboxSync.so"
+  sh "unzip -p source/binding/Android/dropbox-android-sync-sdk-#{VERSION}.zip 'dropbox-android-sync-sdk-#{VERSION}/libs/dropbox-sync-sdk-android.jar' > source/binding/Android/Jars/dropbox-sync-sdk-android.jar"
   sh "#{MONOXBUILD} /p:Configuration=Release source/binding/Android/DropboxSync.Android.csproj"
   sh "cp source/binding/Android/bin/Release/DropboxSync.Android.dll source/binding/Android/DropboxSync.Android.dll"
 end
