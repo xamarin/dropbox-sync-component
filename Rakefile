@@ -21,9 +21,11 @@ CLEAN.include "source/binding/Android/Jars/armeabi-v7a"
 CLEAN.include "source/binding/Android/Jars/mips"
 CLEAN.include "source/binding/Android/Jars/x86"
 
-VERSION="2.0.2"
+VERSION = "2.0.2"
 COMPONENT = "dropboxsync-#{VERSION}.xam"
 MONOXBUILD = "/Library/Frameworks/Mono.framework/Commands/xbuild"
+IOSZIP = "https://dl.dropboxusercontent.com/s/bq1764wzfhlfeqt/dropbox-ios-sync-sdk-2.0.2.zip"
+ANDROIDZIP = "https://dl.dropboxusercontent.com/s/zsr4dns0dk69uym/dropbox-android-sync-sdk-2.0.2.zip"
 
 file "xpkg/xamarin-component.exe" do
 	puts "* Downloading xamarin-component..."
@@ -34,14 +36,14 @@ file "xpkg/xamarin-component.exe" do
 end
 
 file "source/binding/iOS/DropBoxSync.iOS.dll" do
-  sh "curl -L 'https://dl.dropboxusercontent.com/s/bq1764wzfhlfeqt/dropbox-ios-sync-sdk-2.0.2.zip' > source/binding/iOS/dropbox-ios-sync-sdk-#{VERSION}.zip"
+  sh "curl -L '#{IOSZIP}' > source/binding/iOS/dropbox-ios-sync-sdk-#{VERSION}.zip"
   sh "unzip -p source/binding/iOS/dropbox-ios-sync-sdk-#{VERSION}.zip 'dropbox-ios-sync-sdk-#{VERSION}/Dropbox.framework/Dropbox' > source/binding/iOS/Dropbox.a"
   sh "#{MONOXBUILD} /p:Configuration=Release source/binding/iOS/DropBoxSync.iOS.csproj"
   sh "cp source/binding/iOS/bin/Release/DropBoxSync.iOS.dll source/binding/iOS/DropBoxSync.iOS.dll"
 end
 
 file "source/binding/Android/DropboxSync.Android.dll" do
-  sh "curl -L 'https://dl.dropboxusercontent.com/s/zsr4dns0dk69uym/dropbox-android-sync-sdk-2.0.2.zip' > source/binding/Android/dropbox-android-sync-sdk-#{VERSION}.zip"
+  sh "curl -L '#{ANDROIDZIP}' > source/binding/Android/dropbox-android-sync-sdk-#{VERSION}.zip"
   sh "mkdir -p source/binding/Android/Jars/armeabi/"
   sh "mkdir -p source/binding/Android/Jars/armeabi-v7a/"
   sh "mkdir -p source/binding/Android/Jars/mips/"
