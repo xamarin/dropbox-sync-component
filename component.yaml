@@ -1,4 +1,4 @@
-version: 1.9
+version: 2.0.2
 name: Dropbox Sync
 id: dropboxsync
 publisher: Dropbox, Inc.
@@ -10,4 +10,3 @@ libraries:
 samples:
   "iOS Sample. Demonstrates Dropbox Awesomeness on iOS.": "source/samples/DropBoxSyncSampleMTD/DropBoxSyncSampleMTD.sln"
   "iOS MonkeyBox. Demonstrates Dropbox Datastore Awesomeness on iOS.": "source/samples/MonkeyBox/MonkeyBox.sln"
-
