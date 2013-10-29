@@ -5,6 +5,7 @@
   
   This sample removes the method: android.support.v4.content.CursorLoader.loadInBackground:
   <remove-node path="/api/package[@name='android.support.v4.content']/class[@name='CursorLoader']/method[@name='loadInBackground']" />
+  <remove-node path="/api/package[@name='com.dropbox.sync.android']/class[@name='CoreAccountManager']/method[@name='1']" />
   -->
   
  <!-- Visibility Change -->
@@ -12,17 +13,25 @@
 	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAtom']" name="visibility">public</attr>
 	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxValue']" name="visibility">public</attr>
 
+<!--- Event Normalization -->
+  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccountManager']/method[@name='addListener']" name="eventName">LinkedAccountChanged</attr>
+  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccount']/method[@name='addListener']" name="eventName">AccountChanged</attr>
+  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxFile']/method[@name='addListener']" name="eventName">FileChanged</attr>
+
+  <attr path="/api/package[@name='com.dropbox.sync.android']/interface[@name='DbxAccountManager.AccountListener']" name="argsType">AccountChangedEventArgs</attr>
+
 <!-- Namespace Normalization -->
 	<attr path="/api/package[@name='com.dropbox.client2.android']" name="managedName">DropboxSync.Android.Client2</attr>
 	<attr path="/api/package[@name='com.dropbox.sync.android']" name="managedName">DropboxSync.Android</attr>
 
 <!-- Class Normalization -->	
-	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccount']" name="managedName">DBAccount</attr>
+  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccount']" name="managedName">DBAccount</attr>
 	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccountInfo']" name="managedName">DBAccountInfo</attr>
-	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccountManager']" name="managedName">DBAccountManager</attr>
 	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAtom']" name="managedName">DBAtom</attr>
 	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAuthActivity']" name="managedName">DBAuthActivity</attr>
+  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccountManager']" name="managedName">DBAccountManager</attr>
 	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxDatastore']" name="managedName">DBDatastore</attr>
+  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxDatastoreInfo']" name="managedName">DBDatastoreInfo</attr>
 	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxDatastoreManager']" name="managedName">DBDatastoreManager</attr>
 	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxDatastoreStatus']" name="managedName">DBDatastoreStatus</attr>
 	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxException']" name="managedName">DBException</attr>
@@ -39,6 +48,17 @@
 	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxTable']" name="managedName">DBTable</attr>
 	<attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxValue']" name="managedName">DBValue</attr>
 	
+<!--- Return type Normalization -->
+<!--  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccountManager']/method[@name='getInstance']" name="managedReturn">DBAccountManager</attr>-->
+
+<!--- Parameter Normalization -->  
+  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccountManager']/method[@name='getInstance']/parameter[@name='p0']" name="name">context</attr>
+  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccountManager']/method[@name='getInstance']/parameter[@name='p1']" name="name">appKey</attr>
+  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccountManager']/method[@name='getInstance']/parameter[@name='p2']" name="name">appSecret</attr>
+  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccountManager']/method[@name='startLink']/parameter[@name='p0']" name="name">fragment</attr>
+  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccountManager']/method[@name='startLink']/parameter[@name='p1']" name="name">callbackRequestCode</attr>
+
+
 <!-- Interface Normalization -->	
-	<attr path="/api/package[@name='com.dropbox.sync.android']/interface[@name='DbxFileSystem.PathListener']" name="managedName">DBFileSystem.IPathListener</attr>
+  <attr path="/api/package[@name='com.dropbox.sync.android']/interface[@name='DbxFileSystem.PathListener']" name="managedName">DBFileSystem.IPathListener</attr>
 </metadata>
