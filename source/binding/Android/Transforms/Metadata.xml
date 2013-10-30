@@ -17,6 +17,7 @@
   <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccountManager']/method[@name='addListener']" name="eventName">LinkedAccountChanged</attr>
   <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccount']/method[@name='addListener']" name="eventName">AccountChanged</attr>
   <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxFile']/method[@name='addListener']" name="eventName">FileChanged</attr>
+  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxDatastore']/method[@name='addSyncStatusListener']" name="eventName">DatastoreChanged</attr>
 
   <attr path="/api/package[@name='com.dropbox.sync.android']/interface[@name='DbxAccountManager.AccountListener']" name="argsType">AccountChangedEventArgs</attr>
 
@@ -57,6 +58,10 @@
   <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccountManager']/method[@name='getInstance']/parameter[@name='p2']" name="name">appSecret</attr>
   <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccountManager']/method[@name='startLink']/parameter[@name='p0']" name="name">fragment</attr>
   <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxAccountManager']/method[@name='startLink']/parameter[@name='p1']" name="name">callbackRequestCode</attr>
+  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxDatastore']/method[@name='openDefault']/parameter[@name='p0']" name="name">account</attr>
+  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxDatastore']/method[@name='getTable']/parameter[@name='p0']" name="name">tableName</attr>
+  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxTable']/method[@name='query']/parameter[@name='p0']" name="name">fields</attr>
+  <attr path="/api/package[@name='com.dropbox.sync.android']/class[@name='DbxList']/method[starts-with(@name, 'get')]/parameter[@name='p0']" name="name">fieldName</attr>
 
 
 <!-- Interface Normalization -->	
