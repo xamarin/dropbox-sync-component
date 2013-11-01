@@ -37,7 +37,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <JavaDocPaths>javadoc</JavaDocPaths>
+    <JavaDocPaths>/Users/zgramana/Source/dropbox-sync-component/source/binding/Android/javadoc</JavaDocPaths>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
