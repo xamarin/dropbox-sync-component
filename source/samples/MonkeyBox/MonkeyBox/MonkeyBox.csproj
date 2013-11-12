@@ -102,6 +102,7 @@
     <Compile Include="PlaygroundViewController.cs" />
     <Compile Include="DropboxDatabase.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Monkey.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
