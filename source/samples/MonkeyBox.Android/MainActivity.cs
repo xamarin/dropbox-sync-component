@@ -24,11 +24,13 @@ namespace MonkeyBox.Android
         const string DropboxSyncKey = "twjxmah1ytyhlrj";
         //"YOUR_APP_SECRET";
         const string DropboxSyncSecret = "be9562vibydmzip";
+
         public DBAccountManager Account { get; private set; }
 
         public DBDatastore DropboxDatastore { get; set; }
 
         public IEnumerable<Monkey> Monkeys { get; set; }
+
         public Dictionary<string, MonkeyView> Views { get; set; }
 
         protected override void OnCreate (Bundle bundle)
@@ -46,7 +48,6 @@ namespace MonkeyBox.Android
             } else {
                 StartApp ();
             }
-
         }
 
         void StartApp ()
@@ -70,6 +71,7 @@ namespace MonkeyBox.Android
 
                     mainLayout.AddView (mv, layoutParams);
                     Views[monkey.Name] = mv;
+                    mv.PinchDetector = new ScaleGestureDetector(this, mv);
                 } else {
                     var mv = Views[monkey.Name];
                     mv.BringToFront(); // Handles z-index changes.
@@ -126,6 +128,8 @@ namespace MonkeyBox.Android
                 StartApp();
             }
         }
+
+
     }
 }
 
