@@ -61,6 +61,8 @@ namespace MonkeyBox.Android
         void DrawMonkeys (IEnumerable<Monkey> monkeys)
         {
             var mainLayout = FindViewById (Resource.Id.main) as RelativeLayout;
+            if (mainLayout == null) 
+                throw new ApplicationException("Missing our main layout. Please ensure the layout xml is included in the project.");
 
             foreach (var monkey in monkeys.OrderBy(m => m.Z))
             {
@@ -71,7 +73,7 @@ namespace MonkeyBox.Android
 
                     mainLayout.AddView (mv, layoutParams);
                     Views[monkey.Name] = mv;
-                    mv.PinchDetector = new ScaleGestureDetector(this, mv);
+//                    mv.PinchDetector = new ScaleGestureDetector(this, mv);
                 } else {
                     var mv = Views[monkey.Name];
                     mv.BringToFront(); // Handles z-index changes.

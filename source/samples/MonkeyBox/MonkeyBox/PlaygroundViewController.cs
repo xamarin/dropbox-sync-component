@@ -136,7 +136,7 @@ namespace MonkeyBox
 			lastScale = gesture.Scale;
 			if(gesture.State == UIGestureRecognizerState.Ended)
 			{
-				CurrentMonkey.UpdateMonkey(0,this.Bounds);
+				CurrentMonkey.UpdateMonkey(Bounds);
 				Parent.UpdateMonkey(CurrentMonkey.Monkey);
 			}
 		}
@@ -149,7 +149,7 @@ namespace MonkeyBox
 				return;
 			if (gesture.State == UIGestureRecognizerState.Ended) {
 				lastRotation = 0;
-				CurrentMonkey.UpdateMonkey(0,this.Bounds);
+				CurrentMonkey.UpdateMonkey(Bounds);
 				Parent.UpdateMonkey(CurrentMonkey.Monkey);
 				return;
 			}
@@ -178,7 +178,7 @@ namespace MonkeyBox
 			CurrentMonkey.Center = point;
 			if(gesture.State == UIGestureRecognizerState.Ended)
 			{
-				CurrentMonkey.UpdateMonkey(0,this.Bounds);
+				CurrentMonkey.UpdateMonkey(Bounds);
 				Parent.UpdateMonkey(CurrentMonkey.Monkey);
 			}
 		}
