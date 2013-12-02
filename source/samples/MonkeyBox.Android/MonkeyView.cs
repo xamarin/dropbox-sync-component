@@ -26,6 +26,8 @@ namespace MonkeyBox.Android
             { "Pepe", Resource.Drawable.Pepe }
         };
 
+        float lastX, lastY;
+
         protected ScaleGestureDetector PinchDetector;
         protected GestureDetector Detector;
         protected VelocityTracker VelocityTracker;
@@ -88,32 +90,34 @@ namespace MonkeyBox.Android
         {
             base.OnDraw (canvas);
 
-            Log.Debug(GetType().Name + " - " + Monkey.Name, "{0}/{1}", GetX(), GetY());
+            //Log.Debug(GetType().Name + " - " + Monkey.Name, "{0}/{1}", GetX(), GetY());
 
             Drawable.SetBounds(0, 0, Drawable.IntrinsicWidth, Drawable.IntrinsicHeight);
 
-            var matrix = new Matrix(Image.ImageMatrix);
+            var matrix = new Matrix();
             //matrix.PreRotate((float)Java.Lang.Math.ToDegrees(Monkey.Rotation), widthOffset, heightOffset);
 
+            var bounds = Drawable.Bounds; //new RectF(Left, Top, Right, Bottom);
             // Apply scaling to monkey image.
-            matrix.PreScale(Monkey.Scale, Monkey.Scale, Image.Width * 0.5f, Image.Height * 0.5f); // The scale factor makes the result look closer to iOS.
+            var xOffset =  ((float)Metrics.WidthPixels * Monkey.X) - lastX;
+            var yOffset = ((float)Metrics.HeightPixels * Monkey.Y) - lastY;
 
+            matrix.PostScale(Monkey.Scale, Monkey.Scale); // The scale factor makes the result look closer to iOS.
+            matrix.PostRotate((float)Java.Lang.Math.ToDegrees(Monkey.Rotation), bounds.CenterX(), bounds.CenterY());
             // Render the image.
             var version = canvas.Save();
             canvas.Concat(matrix);
             Drawable.Draw(canvas);
             canvas.RestoreToCount(version);
 
+            var rect = new RectF(bounds);
+            matrix.Reset();
+            matrix.PostScale(Monkey.Scale, Monkey.Scale, rect.CenterX(), rect.CenterY()); // The scale factor makes the result look closer to iOS.
+            matrix.PostTranslate(xOffset, yOffset);
             // Calculate our view's new bounds from
             // the results of the transforms.
-            var xOffset =  ((float)Metrics.WidthPixels * Monkey.X);
-            var yOffset = (float)Metrics.HeightPixels * Monkey.Y;
-
-            matrix.PostTranslate(xOffset, yOffset);
-
-            var rect = new RectF(Drawable.Bounds.Left, Drawable.Bounds.Top, Drawable.Bounds.Right, Drawable.Bounds.Bottom);
+            rect = new RectF(bounds);
             matrix.MapRect(rect);
-
             Left = (int)rect.Left;
             Right = (int)rect.Right;
             Top = (int)rect.Top;
@@ -181,10 +185,14 @@ namespace MonkeyBox.Android
             var startFinger = MotionEventCompat.GetPointerId(e1, 0);
             var currentFinger = MotionEventCompat.GetPointerId(e2, 0);
             if (startFinger != currentFinger) return false;
-            Monkey.X = (e2.RawX - (Width * 0.5f)) / (float)Metrics.WidthPixels;
-            Monkey.Y = (e2.RawY - (Height * 0.5f)) / (float)Metrics.HeightPixels;
 
-            Log.Debug(GetType().Name + " - " + Monkey.Name, "{0} x {1} (to {2} x {3}) {4:F1} x {5:F1})", distanceX, distanceY, Left, Top, Monkey.X * Metrics.WidthPixels, Monkey.Y * Metrics.HeightPixels);
+            lastX = Left;
+            lastY = Top;
+
+            Monkey.X = (e2.RawX /* - (Width * 0.5f) */ )/ (float)Metrics.WidthPixels;
+            Monkey.Y = (e2.RawY /* - (Height * 0.5f) */) / (float)Metrics.HeightPixels;
+            Log.Debug(GetType().Name + " - " + Monkey.Name + "OnScroll", "e1: {0} x {1}, e2: {2} x {3}", e1.GetX(),e1.GetY(), e2.GetX(), e2.GetY());
+            Log.Debug(GetType().Name + " - " + Monkey.Name + "OnScroll", "{0} x {1} (to {2} x {3}) {4:F1} x {5:F1})", distanceX, distanceY, Left, Top, Monkey.X * Metrics.WidthPixels, Monkey.Y * Metrics.HeightPixels);
 
             Invalidate();
 
