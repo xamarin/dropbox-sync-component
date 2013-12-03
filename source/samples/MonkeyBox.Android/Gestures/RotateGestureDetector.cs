@@ -73,7 +73,7 @@ namespace Android.Views
 		}
 
 		protected internal override void HandleStartProgressEvent(MotionEventActions actionCode, MotionEvent
-			 @event)
+			 evt)
 		{
 			switch (actionCode)
 			{
@@ -82,11 +82,11 @@ namespace Android.Views
 					// At least the second finger is on screen now
 					ResetState();
 					// In case we missed an UP/CANCEL event
-					mPrevEvent = MotionEvent.Obtain(@event);
+					mPrevEvent = MotionEvent.Obtain(evt);
 					mTimeDelta = 0;
-					UpdateStateByEvent(@event);
+					UpdateStateByEvent(evt);
 					// See if we have a sloppy gesture
-					mSloppyGesture = IsSloppyGesture(@event);
+					mSloppyGesture = IsSloppyGesture(evt);
 					if (!mSloppyGesture)
 					{
 						// No, start gesture now
@@ -102,7 +102,7 @@ namespace Android.Views
 						break;
 					}
 					// See if we still have a sloppy gesture
-					mSloppyGesture = IsSloppyGesture(@event);
+					mSloppyGesture = IsSloppyGesture(evt);
 					if (!mSloppyGesture)
 					{
 						// No, start normal gesture now
@@ -123,14 +123,14 @@ namespace Android.Views
 		}
 
 		protected internal override void HandleInProgressEvent(MotionEventActions actionCode, MotionEvent
-			 @event)
+			 evt)
 		{
 			switch (actionCode)
 			{
 				case MotionEventActions.PointerUp:
 				{
 					// Gesture ended but 
-					UpdateStateByEvent(@event);
+					UpdateStateByEvent(evt);
 					if (!mSloppyGesture)
 					{
 						mListener.OnRotateEnd(this);
@@ -151,7 +151,7 @@ namespace Android.Views
 
 				case MotionEventActions.Move:
 				{
-					UpdateStateByEvent(@event);
+					UpdateStateByEvent(evt);
 					// Only accept the event if our relative pressure is within
 					// a certain limit. This can help filter shaky data as a
 					// finger is lifted.
@@ -161,7 +161,7 @@ namespace Android.Views
 						if (updatePrevious)
 						{
 							mPrevEvent.Recycle();
-							mPrevEvent = MotionEvent.Obtain(@event);
+							mPrevEvent = MotionEvent.Obtain(evt);
 						}
 					}
 					break;

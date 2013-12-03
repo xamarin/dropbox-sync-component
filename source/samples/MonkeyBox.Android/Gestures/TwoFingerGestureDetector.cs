@@ -40,10 +40,10 @@ namespace Android.Views
 		}
 
 		protected internal abstract override void HandleStartProgressEvent(MotionEventActions actionCode
-			, MotionEvent @event);
+			, MotionEvent evt);
 
 		protected internal abstract override void HandleInProgressEvent(MotionEventActions actionCode, MotionEvent
-			 @event);
+			 evt);
 
 		protected internal override void UpdateStateByEvent(MotionEvent curr)
 		{
@@ -118,12 +118,12 @@ namespace Android.Views
 		/// <param name="event"></param>
 		/// <param name="pointerIndex"></param>
 		/// <returns></returns>
-		protected internal static float GetRawX(MotionEvent @event, int pointerIndex)
+		protected internal static float GetRawX(MotionEvent evt, int pointerIndex)
 		{
-			float offset = @event.GetX() - @event.RawX;
-			if (pointerIndex < @event.PointerCount)
+			float offset = evt.GetX() - evt.RawX;
+			if (pointerIndex < evt.PointerCount)
 			{
-				return @event.GetX(pointerIndex) + offset;
+				return evt.GetX(pointerIndex) + offset;
 			}
 			return 0f;
 		}
@@ -135,12 +135,12 @@ namespace Android.Views
 		/// <param name="event"></param>
 		/// <param name="pointerIndex"></param>
 		/// <returns></returns>
-		protected internal static float GetRawY(MotionEvent @event, int pointerIndex)
+		protected internal static float GetRawY(MotionEvent evt, int pointerIndex)
 		{
-			float offset = @event.GetY() - @event.RawY;
-			if (pointerIndex < @event.PointerCount)
+			float offset = evt.GetY() - evt.RawY;
+			if (pointerIndex < evt.PointerCount)
 			{
-				return @event.GetY(pointerIndex) + offset;
+				return evt.GetY(pointerIndex) + offset;
 			}
 			return 0f;
 		}
@@ -152,7 +152,7 @@ namespace Android.Views
 		/// </remarks>
 		/// <param name="event"></param>
 		/// <returns></returns>
-		protected internal virtual bool IsSloppyGesture(MotionEvent @event)
+		protected internal virtual bool IsSloppyGesture(MotionEvent evt)
 		{
 			// As orientation can change, query the metrics in touch down
 			DisplayMetrics metrics = mContext.Resources.DisplayMetrics;
@@ -161,10 +161,10 @@ namespace Android.Views
 			float edgeSlop = mEdgeSlop;
 			float rightSlop = mRightSlopEdge;
 			float bottomSlop = mBottomSlopEdge;
-			float x0 = @event.RawX;
-			float y0 = @event.RawY;
-			float x1 = GetRawX(@event, 1);
-			float y1 = GetRawY(@event, 1);
+			float x0 = evt.RawX;
+			float y0 = evt.RawY;
+			float x1 = GetRawX(evt, 1);
+			float y1 = GetRawY(evt, 1);
 			bool p0sloppy = x0 < edgeSlop || y0 < edgeSlop || x0 > rightSlop || y0 > bottomSlop;
 			bool p1sloppy = x1 < edgeSlop || y1 < edgeSlop || x1 > rightSlop || y1 > bottomSlop;
 			if (p0sloppy && p1sloppy)

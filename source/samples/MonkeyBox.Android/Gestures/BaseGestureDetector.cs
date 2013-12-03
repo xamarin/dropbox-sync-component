@@ -57,16 +57,16 @@ namespace Android.Views
 		/// </remarks>
 		/// <param name="event"></param>
 		/// <returns></returns>
-		public virtual bool OnTouchEvent(MotionEvent @event)
+		public virtual bool OnTouchEvent(MotionEvent evt)
 		{
-            MotionEventActions actionCode = (@event.Action & MotionEventActions.Mask);
+            MotionEventActions actionCode = (evt.Action & MotionEventActions.Mask);
 			if (!mGestureInProgress)
 			{
-				HandleStartProgressEvent(actionCode, @event);
+				HandleStartProgressEvent(actionCode, evt);
 			}
 			else
 			{
-				HandleInProgressEvent(actionCode, @event);
+				HandleInProgressEvent(actionCode, evt);
 			}
 			return true;
 		}
@@ -83,7 +83,7 @@ namespace Android.Views
 		/// <param name="actionCode"></param>
 		/// <param name="event"></param>
 		protected internal abstract void HandleStartProgressEvent(MotionEventActions actionCode, MotionEvent
-			 @event);
+			 evt);
 
 		/// <summary>Called when the current event occurred when a gesture IS in progress.</summary>
 		/// <remarks>
@@ -94,7 +94,7 @@ namespace Android.Views
 		/// <param name="action"></param>
 		/// <param name="event"></param>
 		protected internal abstract void HandleInProgressEvent(MotionEventActions actionCode, MotionEvent
-			 @event);
+			 evt);
 
 		protected internal virtual void UpdateStateByEvent(MotionEvent curr)
 		{

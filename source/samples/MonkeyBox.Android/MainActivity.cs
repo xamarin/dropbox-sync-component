@@ -20,10 +20,8 @@ namespace MonkeyBox.Android
     [Activity (Label = "MonkeyBox.Android", MainLauncher = true)]
     public class MainActivity : Activity, ScaleGestureDetector.IOnScaleGestureListener, MoveGestureDetector.IOnMoveGestureListener, RotateGestureDetector.IOnRotateGestureListener, GestureDetector.IOnGestureListener
     {
-        //"YOUR_APP_KEY";
-        const string DropboxSyncKey = "twjxmah1ytyhlrj";
-        //"YOUR_APP_SECRET";
-        const string DropboxSyncSecret = "be9562vibydmzip";
+        const string DropboxSyncKey    = "YOUR_APP_KEY";
+        const string DropboxSyncSecret = "YOUR_APP_SECRET";
 
         public DBAccountManager Account { get; private set; }
 
@@ -40,25 +38,13 @@ namespace MonkeyBox.Android
             { "Pepe", Resource.Id.Pepe }
         };
 
-        ScaleGestureDetector PinchDetector {
-            get;
-            set;
-        }
+        ScaleGestureDetector PinchDetector { get; set; }
 
-        MoveGestureDetector MoveDetector {
-            get;
-            set;
-        }
+        MoveGestureDetector MoveDetector { get; set; }
 
-        RotateGestureDetector RotationDetector {
-            get;
-            set;
-        }
+        RotateGestureDetector RotationDetector { get; set; }
 
-        GestureDetector Detector {
-            get;
-            set;
-        }
+        GestureDetector Detector { get; set; }
 
         Monkey CurrentMonkey {
             get {
@@ -66,15 +52,9 @@ namespace MonkeyBox.Android
             }
         }
 
-        RelativeLayout MainLayout {
-            get;
-            set;
-        }
+        RelativeLayout MainLayout { get; set; }
 
-        Dictionary<string, DBRecord> Records {
-            get;
-            set;
-        }
+        Dictionary<string, DBRecord> Records { get; set; }
 
         protected override void OnCreate (Bundle bundle)
         {
@@ -98,7 +78,6 @@ namespace MonkeyBox.Android
             for(var i = 0; i < MainLayout.ChildCount; i++) {
                 var view = MainLayout.GetChildAt(i);
                 Log.Debug(GetType().Name + " - OnCreate", "View {0} disabled.", i);
-                //view.Enabled = false;
                 view.Focusable = true;
                 view.FocusableInTouchMode = true;
                 view.RequestFocus();
@@ -106,7 +85,7 @@ namespace MonkeyBox.Android
 
             // Setup Dropbox.
             Account = DBAccountManager.GetInstance (ApplicationContext, DropboxSyncKey, DropboxSyncSecret);     
-            Account.LinkedAccountChanged += (sender, e) => Console.WriteLine (e); // TODO: Restart flow.
+            Account.LinkedAccountChanged += (sender, e) => Console.WriteLine (e); // TODO: Restart auth flow.
 
             if (!Account.HasLinkedAccount) {
                 Account.StartLink (this, (int)RequestCode.LinkToDropboxRequest);
@@ -117,7 +96,7 @@ namespace MonkeyBox.Android
 
         void HandleTouch (object sender, View.TouchEventArgs e)
         {
-            var hit = new Rect((int)e.Event.RawX, (int)e.Event.RawY, (int)e.Event.RawX + 1, (int)e.Event.RawY + 1);
+            var hit = new Rect((int)e.Event.GetX(), (int)e.Event.GetY(), (int)e.Event.RawX + 1, (int)e.Event.RawY + 1);
             var currentView = (MonkeyView)CurrentFocus;
 
             // Figure out which view gets this touch event.
@@ -142,6 +121,8 @@ namespace MonkeyBox.Android
         MonkeyView ViewRespondingToHitTest (Rect hit)
         {
             MonkeyView currentView = default(MonkeyView);
+            Log.Debug(GetType().Name + " " + CurrentMonkey.Name + " ViewRespondingToHitTest", "Testing for owner of {0}", hit);
+
             for (var i = MainLayout.ChildCount - 1; i > -1; i--) {
                 var view = (MonkeyView)MainLayout.GetChildAt (i);
                 if (view.CurrentBounds.Contains (hit)) {
@@ -361,10 +342,11 @@ namespace MonkeyBox.Android
 
         void UpdateDropbox ()
         {
-            Log.Debug(GetType().Name + " UpdateDropbox", "TODO: Update dropbox data");
-            // TODO: Update dropbox.
-
-            foreach (var monkey in Monkeys) {
+            Log.Debug(GetType().Name + " UpdatedDropbox", String.Empty);
+            for(var i = 0; i < MainLayout.ChildCount; i++) {
+                var view = (MonkeyView)MainLayout.GetChildAt(i);
+                var monkey = view.Monkey;
+                monkey.Z = i;
                 DBRecord record;
                 Records.TryGetValue (monkey.Name, out record);
                 Console.WriteLine(record);
@@ -386,41 +368,18 @@ namespace MonkeyBox.Android
             } else {
                 // Process existing monkeys.
                 foreach (var row in results) {
-                    Log.Debug(GetType().Name, row.ToString());
-                    Log.Debug(GetType().Name, row.GetFieldType("Rotation").ToString());
-                    Log.Debug(GetType().Name, row.GetFieldType("Scale").ToString());
-                    Log.Debug(GetType().Name, row.GetFieldType("X").ToString());
-                    Log.Debug(GetType().Name, row.GetFieldType("Y").ToString());
-                    Log.Debug(GetType().Name, row.GetFieldType("Z").ToString());
-
                     values.Add(new Monkey { 
                         Name = row.GetString("Name"),
-                        Scale = (float) (row.GetFieldType("Scale").ToString() == "DOUBLE" ? row.GetDouble("Scale") : Convert.ToDouble(row.GetString("Scale"))),
-                        Rotation = (float)(row.GetFieldType("Rotation").ToString() == "DOUBLE" ? row.GetDouble("Rotation") : Convert.ToDouble(row.GetString("Rotation"))),
-                        X = (float)(row.GetFieldType("X").ToString() == "DOUBLE" ? row.GetDouble("X") : Convert.ToDouble(row.GetString("X"))),
-                        Y = (float)(row.GetFieldType("Y").ToString() == "DOUBLE" ? row.GetDouble("Y") : Convert.ToDouble(row.GetString("Y"))),
-                        Z = (int)(row.GetFieldType("Z").ToString() == "LONG" ? row.GetLong("Z") : Convert.ToDouble(row.GetString("Z")))
+                        Scale = Convert.ToSingle(row.GetDouble("Scale")),
+                        Rotation = Convert.ToSingle(row.GetDouble("Rotation")),
+                        X = Convert.ToSingle(row.GetDouble("X")),
+                        Y = Convert.ToSingle(row.GetDouble("Y")),
+                        Z = Convert.ToInt32(row.GetLong("Z"))
                     });
                 }
             }
 
             return values;
-        }
-
-        static IConvertible GetValue (DBRecord row, string fieldName)
-        {
-
-            var fieldType = row.GetFieldType(fieldName).ToString();
-            if (fieldType == FieldTypes.String) {
-                return row.GetString(fieldName);
-            }
-            if (fieldType == FieldTypes.Double) {
-                return row.GetDouble(fieldName);
-            }
-            if (fieldType == FieldTypes.Long) {
-                return row.GetLong(fieldName);
-            }
-            return null;
         }
 
         protected override void OnActivityResult (int requestCode, Result resultCode, Intent data)
