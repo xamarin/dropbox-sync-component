@@ -15,18 +15,9 @@ using Java.Lang;
 
 namespace MonkeyBox.Android
 {
-    public class MonkeyView : View, ScaleGestureDetector.IOnScaleGestureListener, GestureDetector.IOnGestureListener
+    public class MonkeyView : ImageView//, ScaleGestureDetector.IOnScaleGestureListener, GestureDetector.IOnGestureListener
     {
-        static readonly Dictionary<string,int> ResourceMap = new Dictionary<string, int> {
-            { "Fred", Resource.Drawable.Fred },
-            { "George", Resource.Drawable.George },
-            { "Hootie", Resource.Drawable.Hootie },
-            { "Julian", Resource.Drawable.Julian },
-            { "Nim", Resource.Drawable.Nim },
-            { "Pepe", Resource.Drawable.Pepe }
-        };
-
-        float lastX, lastY;
+        // float lastX, lastY;
 
         protected ScaleGestureDetector PinchDetector;
         protected GestureDetector Detector;
@@ -34,9 +25,9 @@ namespace MonkeyBox.Android
 
         protected Monkey monkey;
 
-        protected ImageView Image { get; set; }
+        //        protected ImageView Image { get; set; }
 
-        protected BitmapDrawable Drawable { get { return (BitmapDrawable)Image.Drawable; } }
+        // protected BitmapDrawable Drawable { get { return (BitmapDrawable)Image.Drawable; } }
 
         DisplayMetrics Metrics { get; set; }
 
@@ -50,6 +41,12 @@ namespace MonkeyBox.Android
                 if (needsRedraw)
                     Invalidate();
             }
+        }
+
+        public MonkeyView (Context context, IAttributeSet attrs) :
+            base (context, attrs)
+        {
+            Initialize ();
         }
 
         public MonkeyView (Context context, Monkey monkey) :
@@ -73,7 +70,7 @@ namespace MonkeyBox.Android
             Initialize ();
         }
 
-        protected override void OnMeasure (int widthMeasureSpec, int heightMeasureSpec)
+/*        protected override void OnMeasure (int widthMeasureSpec, int heightMeasureSpec)
         {
             base.OnMeasure (widthMeasureSpec, heightMeasureSpec);
 
@@ -125,35 +122,28 @@ namespace MonkeyBox.Android
 
             Log.Debug(GetType().Name, "{0}'s position: {1}x{2} ({3}x{4}x{5})", Monkey.Name, Left, Top, Monkey.X, Monkey.Y, Monkey.Z);
         }       
-
+*/
         void Initialize ()
         {
-            Image = new ImageView (Context);
-            var resource = ResourceMap[Monkey.Name];
-
-            Log.Debug(GetType().Name, "{0}'s resource: {1}", Monkey.Name, resource);
-
-            Image.SetImageResource (resource);
-
-            Metrics = new DisplayMetrics();
-
-            var manager = ((MainActivity)Context).WindowManager;
-            manager.DefaultDisplay.GetMetrics(Metrics);
-
-            var windowSize = new RectF(0, 0, Metrics.WidthPixels, Metrics.HeightPixels);
-
-            Log.Debug(GetType().Name, "Window dimensions: {0}x{1}", windowSize.Width(), windowSize.Height());
+//            Metrics = new DisplayMetrics();
+//
+//            var manager = ((MainActivity)Context).WindowManager;
+//            manager.DefaultDisplay.GetMetrics(Metrics);
+//
+//            var windowSize = new RectF(0, 0, Metrics.WidthPixels, Metrics.HeightPixels);
+//
+//            Log.Debug(GetType().Name, "Window dimensions: {0}x{1}", windowSize.Width(), windowSize.Height());
 
             // Enable gesture recognizers.
-            PinchDetector = new ScaleGestureDetector(Context, this);
+//            PinchDetector = new ScaleGestureDetector(Context, this);
+//
+//            Detector = new GestureDetector(Context, this);
+//            Detector.IsLongpressEnabled = false;
 
-            Detector = new GestureDetector(Context, this);
-            Detector.IsLongpressEnabled = false;
-
-            VelocityTracker = VelocityTracker.Obtain();
+//            VelocityTracker = VelocityTracker.Obtain();
         }
 
-        public bool OnDown (MotionEvent e)
+/*        public bool OnDown (MotionEvent e)
         {
             return true;
         }
@@ -189,8 +179,8 @@ namespace MonkeyBox.Android
             lastX = Left;
             lastY = Top;
 
-            Monkey.X = (e2.RawX /* - (Width * 0.5f) */ )/ (float)Metrics.WidthPixels;
-            Monkey.Y = (e2.RawY /* - (Height * 0.5f) */) / (float)Metrics.HeightPixels;
+            Monkey.X = (e2.RawX - (Width * 0.5f) )/ (float)Metrics.WidthPixels;
+            Monkey.Y = (e2.RawY  - (Height * 0.5f) ) / (float)Metrics.HeightPixels;
             Log.Debug(GetType().Name + " - " + Monkey.Name + "OnScroll", "e1: {0} x {1}, e2: {2} x {3}", e1.GetX(),e1.GetY(), e2.GetX(), e2.GetY());
             Log.Debug(GetType().Name + " - " + Monkey.Name + "OnScroll", "{0} x {1} (to {2} x {3}) {4:F1} x {5:F1})", distanceX, distanceY, Left, Top, Monkey.X * Metrics.WidthPixels, Monkey.Y * Metrics.HeightPixels);
 
@@ -211,39 +201,39 @@ namespace MonkeyBox.Android
 
             return true;
         }
+*/
+//        public override bool OnTouchEvent (MotionEvent e)
+//        {
+//            PinchDetector.OnTouchEvent(e);
+//
+//            if (PinchDetector.IsInProgress) return true;
+//
+//            return Detector.OnTouchEvent(e);
+//        }
 
-        public override bool OnTouchEvent (MotionEvent e)
-        {
-            PinchDetector.OnTouchEvent(e);
-
-            if (PinchDetector.IsInProgress) return true;
-
-            return Detector.OnTouchEvent(e);
-        }
-
-        #region IOnScaleGestureListener implementation
-
-        public bool OnScale (ScaleGestureDetector detector)
-        {
-            Log.Debug(GetType().Name + " OnScale", "{0}", detector.ScaleFactor);
-            monkey.Scale *= detector.ScaleFactor;
-            Invalidate();
-            return true;
-        }
-
-        public bool OnScaleBegin (ScaleGestureDetector detector)
-        {
-            Log.Debug(GetType().Name + " OnScaleBegin", "{0}", detector.ScaleFactor);
-            return true;
-        }
-
-        public void OnScaleEnd (ScaleGestureDetector detector)
-        {
-            Log.Debug(GetType().Name + " OnScaleEnd", "{0} ({1})", detector.ScaleFactor, PinchDetector.ScaleFactor);
-            // TODO: Update Dropbox with new scale value.
-        }
-
-        #endregion
+//        #region IOnScaleGestureListener implementation
+//
+//        public bool OnScale (ScaleGestureDetector detector)
+//        {
+//            Log.Debug(GetType().Name + " OnScale", "{0}", detector.ScaleFactor);
+//            monkey.Scale *= detector.ScaleFactor;
+//            Invalidate();
+//            return true;
+//        }
+//
+//        public bool OnScaleBegin (ScaleGestureDetector detector)
+//        {
+//            Log.Debug(GetType().Name + " OnScaleBegin", "{0}", detector.ScaleFactor);
+//            return true;
+//        }
+//
+//        public void OnScaleEnd (ScaleGestureDetector detector)
+//        {
+//            Log.Debug(GetType().Name + " OnScaleEnd", "{0} ({1})", detector.ScaleFactor, PinchDetector.ScaleFactor);
+//            // TODO: Update Dropbox with new scale value.
+//        }
+//
+//        #endregion
     }
 }
 
