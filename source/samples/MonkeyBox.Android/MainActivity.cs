@@ -317,15 +317,21 @@ namespace MonkeyBox.Android
             {
                 var id = ResourceMap[monkey.Name];
                 var mv = mainLayout.FindViewById<MonkeyView>(id);
+                monkey.Scale += 0.1f;
+
                 mv.Monkey = monkey;
 
-                mv.TranslationX = monkey.X * (float)Metrics.WidthPixels;
-                mv.TranslationY = monkey.Y * (float)Metrics.HeightPixels;
+
+                mv.PivotX = mv.Drawable.Bounds.ExactCenterX();
+                mv.PivotY = mv.Drawable.Bounds.ExactCenterY();
 
                 mv.Rotation = monkey.Rotation;
 
                 mv.ScaleX = monkey.Scale;
                 mv.ScaleY = monkey.Scale;
+
+                mv.TranslationX = monkey.X * (float)Metrics.WidthPixels;
+                mv.TranslationY = monkey.Y * (float)Metrics.HeightPixels;
 
                 mv.BringToFront();
                 mv.RequestFocus();

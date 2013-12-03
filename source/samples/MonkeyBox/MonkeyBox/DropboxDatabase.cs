@@ -42,7 +42,7 @@ namespace MonkeyBox
 			DBError error;
 			store = DBDatastore.OpenDefaultStoreForAccount (DBAccountManager.SharedManager.LinkedAccount, out error);
 			var sync = store.Sync (out error);
-			store.AddObserver (store, () => {
+            store.AddObserver (store, () => {
 				LoadData ();
 			});
 			AutoUpdating = true;
@@ -79,6 +79,7 @@ namespace MonkeyBox
 		{
 			records = results.ToDictionary (x => x.Fields ["Name"].ToString (), x => x);
 			foreach (var result in results) {
+                Console.WriteLine(result.Fields.DebugDescription);
 				var name = result.Fields ["Name"].ToString ();
 				Monkey monkey;
 				monkeyDictionary.TryGetValue (name, out monkey);
@@ -130,6 +131,7 @@ namespace MonkeyBox
 		{
 			DBRecord record;
 			records.TryGetValue (monkey.Name, out record);
+            Console.WriteLine(record);
 			record.Update (monkey.ToDictionary ());
 			store.SyncAsync ();
 		}

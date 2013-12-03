@@ -55,8 +55,8 @@ namespace MonkeyBox
             // in order to make it easier to draw the
             // monkeys on Android and other platforms.
 
-            var widthOffset = Bounds.Width * 0.5f;
-            var heightOffset = Bounds.Width * 0.5f;
+            var widthOffset = Frame.Width * 0.5f;
+            var heightOffset = Frame.Width * 0.5f;
 
             Monkey.X = (Center.X - widthOffset) / bounds.Width;
             Monkey.Y = (Center.Y - heightOffset) / bounds.Height;
