@@ -57,6 +57,7 @@
     <Compile Include="Gestures\MoveGestureDetector.cs" />
     <Compile Include="Gestures\RotateGestureDetector.cs" />
     <Compile Include="Gestures\TwoFingerGestureDetector.cs" />
+    <Compile Include="FieldTypes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

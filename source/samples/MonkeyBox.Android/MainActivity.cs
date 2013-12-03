@@ -387,18 +387,40 @@ namespace MonkeyBox.Android
                 // Process existing monkeys.
                 foreach (var row in results) {
                     Log.Debug(GetType().Name, row.ToString());
+                    Log.Debug(GetType().Name, row.GetFieldType("Rotation").ToString());
+                    Log.Debug(GetType().Name, row.GetFieldType("Scale").ToString());
+                    Log.Debug(GetType().Name, row.GetFieldType("X").ToString());
+                    Log.Debug(GetType().Name, row.GetFieldType("Y").ToString());
+                    Log.Debug(GetType().Name, row.GetFieldType("Z").ToString());
+
                     values.Add(new Monkey { 
                         Name = row.GetString("Name"),
-                        Scale = Convert.ToSingle(row.GetString("Scale")),
-                        Rotation = Convert.ToSingle(row.GetString("Rotation")),
-                        X = Convert.ToSingle(row.GetString("X")),
-                        Y = Convert.ToSingle(row.GetString("Y")),
-                        Z = Convert.ToInt32(row.GetString("Z"))
+                        Scale = (float) (row.GetFieldType("Scale").ToString() == "DOUBLE" ? row.GetDouble("Scale") : Convert.ToDouble(row.GetString("Scale"))),
+                        Rotation = (float)(row.GetFieldType("Rotation").ToString() == "DOUBLE" ? row.GetDouble("Rotation") : Convert.ToDouble(row.GetString("Rotation"))),
+                        X = (float)(row.GetFieldType("X").ToString() == "DOUBLE" ? row.GetDouble("X") : Convert.ToDouble(row.GetString("X"))),
+                        Y = (float)(row.GetFieldType("Y").ToString() == "DOUBLE" ? row.GetDouble("Y") : Convert.ToDouble(row.GetString("Y"))),
+                        Z = (int)(row.GetFieldType("Z").ToString() == "LONG" ? row.GetLong("Z") : Convert.ToDouble(row.GetString("Z")))
                     });
                 }
             }
 
             return values;
+        }
+
+        static IConvertible GetValue (DBRecord row, string fieldName)
+        {
+
+            var fieldType = row.GetFieldType(fieldName).ToString();
+            if (fieldType == FieldTypes.String) {
+                return row.GetString(fieldName);
+            }
+            if (fieldType == FieldTypes.Double) {
+                return row.GetDouble(fieldName);
+            }
+            if (fieldType == FieldTypes.Long) {
+                return row.GetLong(fieldName);
+            }
+            return null;
         }
 
         protected override void OnActivityResult (int requestCode, Result resultCode, Intent data)
