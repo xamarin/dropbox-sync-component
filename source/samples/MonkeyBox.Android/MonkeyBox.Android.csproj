@@ -53,6 +53,10 @@
     <Compile Include="RequestCode.cs" />
     <Compile Include="Monkey.cs" />
     <Compile Include="MonkeyView.cs" />
+    <Compile Include="Gestures\BaseGestureDetector.cs" />
+    <Compile Include="Gestures\MoveGestureDetector.cs" />
+    <Compile Include="Gestures\RotateGestureDetector.cs" />
+    <Compile Include="Gestures\TwoFingerGestureDetector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -85,5 +89,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable-hdpi\" />
+    <Folder Include="Gestures\" />
   </ItemGroup>
 </Project>

@@ -43,6 +43,18 @@ namespace MonkeyBox.Android
             }
         }
 
+        public Rect CurrentBounds {
+            get {
+                var x = (int)GetX();
+                var y = (int)GetY();
+
+                var rect = new RectF(Drawable.Bounds); //Left, Top, Right, Bottom);
+                var bounds = Matrix.MapRect(rect);
+
+                return new Rect((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
+            }
+        }
+
         public MonkeyView (Context context, IAttributeSet attrs) :
             base (context, attrs)
         {
@@ -82,11 +94,13 @@ namespace MonkeyBox.Android
 
             SetMeasuredDimension(viewWidth, viewHeight);
         }
-
+        
         protected override void OnDraw (Canvas canvas)
         {
             base.OnDraw (canvas);
-
+            ImageMatrix.Set(canvas.Matrix);
+        }
+            /*
             //Log.Debug(GetType().Name + " - " + Monkey.Name, "{0}/{1}", GetX(), GetY());
 
             Drawable.SetBounds(0, 0, Drawable.IntrinsicWidth, Drawable.IntrinsicHeight);
