@@ -71,6 +71,11 @@ namespace MonkeyBox.Android
             set;
         }
 
+        Dictionary<string, DBRecord> Records {
+            get;
+            set;
+        }
+
         protected override void OnCreate (Bundle bundle)
         {
             base.OnCreate (bundle);
@@ -317,7 +322,6 @@ namespace MonkeyBox.Android
             {
                 var id = ResourceMap[monkey.Name];
                 var mv = mainLayout.FindViewById<MonkeyView>(id);
-                monkey.Scale += 0.1f;
 
                 mv.Monkey = monkey;
 
@@ -359,6 +363,15 @@ namespace MonkeyBox.Android
         {
             Log.Debug(GetType().Name + " UpdateDropbox", "TODO: Update dropbox data");
             // TODO: Update dropbox.
+
+            foreach (var monkey in Monkeys) {
+                DBRecord record;
+                Records.TryGetValue (monkey.Name, out record);
+                Console.WriteLine(record);
+                record.SetAll (monkey.ToFields());
+            }
+
+            DropboxDatastore.Sync();
         }
 
         IEnumerable<Monkey> GetMonkeys ()
@@ -366,7 +379,7 @@ namespace MonkeyBox.Android
             var table = DropboxDatastore.GetTable ("monkeys");
             var values = new List<Monkey>(6);
             var results = table.Query ().AsList ();
-
+            Records = results.ToDictionary (x => x.GetString("Name"), x => x);
             if (results.Count == 0) {
                 // Generate random monkeys.
                 values.AddRange(Monkey.GetAllMonkeys());

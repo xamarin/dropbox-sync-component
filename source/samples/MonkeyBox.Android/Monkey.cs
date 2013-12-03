@@ -1,10 +1,23 @@
 using System;
 using System.Collections.Generic;
+using DropboxSync.Android;
 
 namespace MonkeyBox
 {
 	public class Monkey
 	{
+        public DBFields ToFields ()
+        {
+            var fields = new DBFields();
+            fields.Set("X", X.ToString());
+            fields.Set("Y", Y.ToString());
+            fields.Set("Z", Z.ToString());
+            fields.Set("Name", Name);
+            fields.Set("Rotation", (Math.PI * Rotation / 180f).ToString());
+            fields.Set("Scale", Scale.ToString());
+            return fields;
+        }
+
 		static Random random = new Random();
 		public Monkey ()
 		{
