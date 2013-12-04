@@ -14,6 +14,7 @@ using Android.Graphics;
 using Android.Util;
 using Java.Util;
 using Android.Views;
+using Java.Security;
 
 namespace MonkeyBox.Android
 {
@@ -48,9 +49,13 @@ namespace MonkeyBox.Android
 
         Monkey CurrentMonkey {
             get {
-                return CurrentFocus != null ? ((MonkeyView)CurrentFocus).Monkey : ((MonkeyView)MainLayout.GetChildAt(MainLayout.ChildCount - 1)).Monkey;
+                return CurrentFocus != null 
+                    ? ((MonkeyView)CurrentFocus).Monkey 
+                    : ((MonkeyView)MainLayout.GetChildAt(MainLayout.ChildCount - 1)).Monkey;
             }
         }
+
+        MonkeyView CurrentView { get; set; }
 
         RelativeLayout MainLayout { get; set; }
 
@@ -77,7 +82,7 @@ namespace MonkeyBox.Android
             // Disable touch handling by the views themselves.
             for(var i = 0; i < MainLayout.ChildCount; i++) {
                 var view = MainLayout.GetChildAt(i);
-                Log.Debug(GetType().Name + " - OnCreate", "View {0} disabled.", i);
+                Log("OnCreate", "View {0} disabled.", i);
                 view.Focusable = true;
                 view.FocusableInTouchMode = true;
                 view.RequestFocus();
@@ -97,20 +102,30 @@ namespace MonkeyBox.Android
         void HandleTouch (object sender, View.TouchEventArgs e)
         {
             var hit = new Rect((int)e.Event.GetX(), (int)e.Event.GetY(), (int)e.Event.RawX + 1, (int)e.Event.RawY + 1);
-            var currentView = (MonkeyView)CurrentFocus;
+            Log ("HandleTouch", "Responding to {0} event for location {1}" , e.Event.Action, hit);
 
             // Figure out which view gets this touch event.
-            if (currentView == null) {
-                currentView = ViewRespondingToHitTest (hit);
+
+            // If a gesture is in progress, don't change the focus.
+            if (!(MoveDetector.IsInProgress && PinchDetector.IsInProgress && RotationDetector.IsInProgress))
+            {
+                // See if there's another view that should respond to this event.
+                var targetView = ViewRespondingToHitTest (hit);
+                if (targetView != null && CurrentView != targetView && e.Event.Action == MotionEventActions.Down) {
+                    targetView.RequestFocus();
+                    CurrentView = targetView;
+                }
+            } else {
+                Log("HandleTouch", "A gesture is currently in progress.");
             }
 
             var handled = false;
 
-            if (currentView != null) {
+            if (CurrentView != null) {
                 foreach (var result in ProcessDetectors(e.Event)) {
                     if (result) {
                         handled = true;
-                        Log.Debug(GetType().Name + " " + CurrentMonkey.Name + " HandleTouch", "One or more detectors handled the touch.");
+                        Log("HandleTouch", "One or more detectors handled the touch.");
                     }
                 }
             }
@@ -120,18 +135,41 @@ namespace MonkeyBox.Android
 
         MonkeyView ViewRespondingToHitTest (Rect hit)
         {
-            MonkeyView currentView = default(MonkeyView);
-            Log.Debug(GetType().Name + " " + CurrentMonkey.Name + " ViewRespondingToHitTest", "Testing for owner of {0}", hit);
+            var currentView = default(MonkeyView);
 
             for (var i = MainLayout.ChildCount - 1; i > -1; i--) {
                 var view = (MonkeyView)MainLayout.GetChildAt (i);
-                if (view.CurrentBounds.Contains (hit)) {
+
+                if (IsWithinCircularBounds(hit, view.CurrentBounds)) {
                     currentView = view;
                     currentView.RequestFocus ();
+                    Log("ViewRespondingToHitTest", "Found owner of {0}", hit);
                     break;
                 }
             }
             return currentView;
+        }
+
+        static bool IsWithinCircularBounds (Rect hit, Rect bounds)
+        {
+            if (!bounds.Contains(hit)) return false;
+
+            // Forumula for a circle: (x-a)2 + (y-b)2 = r2
+            var centerX = bounds.ExactCenterX() - bounds.Left;
+            var centerY = bounds.ExactCenterY() - bounds.Top;
+            var radius = centerX;
+
+            double x = hit.Left - bounds.Left, 
+                   y = hit.Top - bounds.Top, 
+                   r2 = radius * radius,
+                   xx = (x - centerX);
+
+            var yy = Math.Sqrt(r2 - xx*xx) + 0.5;
+            var upperBound = centerY - yy;
+            var lowerBound = centerY + yy;
+
+            var result = !Double.IsNaN (y) && y > upperBound && y < lowerBound;
+            return result;
         }
 
         DisplayMetrics Metrics {
@@ -145,13 +183,13 @@ namespace MonkeyBox.Android
         IEnumerable<bool> ProcessDetectors(MotionEvent e) {
 
             RotationDetector.OnTouchEvent(e);
-            yield return RotationDetector.IsInProgress();
+            yield return RotationDetector.IsInProgress;
 
             PinchDetector.OnTouchEvent(e);
             yield return PinchDetector.IsInProgress;
 
             MoveDetector.OnTouchEvent(e);
-            yield return MoveDetector.IsInProgress();
+            yield return MoveDetector.IsInProgress;
 
             yield return Detector.OnTouchEvent(e);
         }
@@ -160,7 +198,7 @@ namespace MonkeyBox.Android
 
         public bool OnScale (ScaleGestureDetector detector)
         {
-            Log.Debug(GetType().Name + " " + CurrentMonkey.Name + " OnScale", "{0}", detector.ScaleFactor);
+            Log("OnScale", "Scaling by a factor of {0}", detector.ScaleFactor);
             var view = (MonkeyView)MainLayout.FindFocus();
             var bounds = view.Drawable.Bounds;
 
@@ -193,7 +231,7 @@ namespace MonkeyBox.Android
         {
             var positionOffset = detector.FocusDelta;
 
-            var view = (MonkeyView)MainLayout.FindFocus();
+            var view = CurrentView;
 
             view.TranslationX += positionOffset.X;
             view.TranslationY += positionOffset.Y;
@@ -201,7 +239,7 @@ namespace MonkeyBox.Android
             view.Monkey.X = view.TranslationX / (float)Metrics.WidthPixels;
             view.Monkey.Y = view.TranslationY / (float)Metrics.HeightPixels;
 
-            Log.Debug(GetType().Name + " " + CurrentMonkey.Name + " OnMove", "Handling touch events");
+            Log("OnMove");
             return true;
         }
 
@@ -212,7 +250,7 @@ namespace MonkeyBox.Android
 
         public void OnMoveEnd (MoveGestureDetector detector)
         {
-            Log.Debug(GetType().Name + " " + CurrentMonkey.Name + " OnMoveEnd", "Handling touch events");
+            Log("OnMoveEnd");
             UpdateDropbox();
         }
 
@@ -222,15 +260,15 @@ namespace MonkeyBox.Android
 
         public bool OnRotate (RotateGestureDetector detector)
         {
-            var view = (MonkeyView)MainLayout.FindFocus();
+            var view = CurrentView;
             var bounds = view.Drawable.Bounds;
 
-            Log.Debug(GetType().Name + " " + CurrentMonkey.Name + " OnRotate", "Rotating {0:F3} degrees to {1:F3}.", detector.RotationDegreesDelta, view.RotationX);
+            Log("OnRotate", "Rotating {0:F3} degrees to {1:F3}.", detector.RotationDegreesDelta, view.RotationX);
 
             view.PivotX = bounds.ExactCenterX();
             view.PivotY = bounds.ExactCenterY();
 
-            view.Monkey.Rotation -= detector.RotationDegreesDelta ;//* (float)(180.0 / Math.PI);
+            view.Monkey.Rotation -= detector.RotationDegreesDelta ; // In decimal degrees.
             view.Rotation = view.Monkey.Rotation;
 
             return true;
@@ -272,17 +310,16 @@ namespace MonkeyBox.Android
 
         public bool OnSingleTapUp (MotionEvent e)
         {
-            Log.Debug(GetType().Name + " " + CurrentMonkey.Name + " OnSingleTapUp", "Handling touch events");
+            if (CurrentView == null) return true;
 
-            var currentView = (MonkeyView)CurrentFocus;
-            var hit = new Rect((int)e.RawX, (int)e.RawY, (int)e.RawX + 1, (int)e.RawY + 1);
+            Log("OnSingleTapUp", "Bringing {0} to the top.", CurrentView.Monkey.Name);
 
-            if (!currentView.CurrentBounds.Contains(hit)) {
-                currentView = ViewRespondingToHitTest(hit);
-                if (currentView == null) return true;
-                currentView.BringToFront();
-                currentView.RequestFocus();
-            }
+            CurrentView.BringToFront();
+            CurrentView.RequestFocus();
+            CurrentView.Invalidate();
+
+            UpdateDropbox();
+
             return true;
         }
 
@@ -306,7 +343,6 @@ namespace MonkeyBox.Android
 
                 mv.Monkey = monkey;
 
-
                 mv.PivotX = mv.Drawable.Bounds.ExactCenterX();
                 mv.PivotY = mv.Drawable.Bounds.ExactCenterY();
 
@@ -320,10 +356,7 @@ namespace MonkeyBox.Android
 
                 mv.BringToFront();
                 mv.RequestFocus();
-
-                Log.Debug(GetType().Name + " " + mv.Monkey.Name + " OnSingleTapUp", "Handling touch events");
             }
-
         }
 
         void InitializeDropbox ()
@@ -342,7 +375,7 @@ namespace MonkeyBox.Android
 
         void UpdateDropbox ()
         {
-            Log.Debug(GetType().Name + " UpdatedDropbox", String.Empty);
+            Log("Updating Dropbox");
             for(var i = 0; i < MainLayout.ChildCount; i++) {
                 var view = (MonkeyView)MainLayout.GetChildAt(i);
                 var monkey = view.Monkey;
@@ -391,7 +424,15 @@ namespace MonkeyBox.Android
             }
         }
 
+        void Log (string location) {
+            Log(location, String.Empty);           
+        }
 
+        void Log (string location, string format, params object[] objects)
+        {
+            var tag = String.Format("{0} {1}.{2}", GetType ().Name, CurrentMonkey == null ? String.Empty : CurrentMonkey.Name, location);
+            global::Android.Util.Log.Debug (tag, format, objects);
+        }
     }
 }
 

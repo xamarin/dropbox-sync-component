@@ -79,7 +79,6 @@ namespace MonkeyBox
 		{
 			records = results.ToDictionary (x => x.Fields ["Name"].ToString (), x => x);
 			foreach (var result in results) {
-                Console.WriteLine(result.Fields.DebugDescription);
 				var name = result.Fields ["Name"].ToString ();
 				Monkey monkey;
 				monkeyDictionary.TryGetValue (name, out monkey);
@@ -131,7 +130,6 @@ namespace MonkeyBox
 		{
 			DBRecord record;
 			records.TryGetValue (monkey.Name, out record);
-            Console.WriteLine(record);
 			record.Update (monkey.ToDictionary ());
 			store.SyncAsync ();
 		}
@@ -178,12 +176,12 @@ namespace MonkeyBox
 
 		public static Monkey Update (this Monkey monkey, DBRecord record)
 		{
-			monkey.Name = record.Fields [new NSString ("Name")].ToString ();
-			monkey.Rotation = float.Parse (record.Fields [new NSString ("Rotation")].ToString ());
-			monkey.Scale = float.Parse (record.Fields [new NSString ("Scale")].ToString ());
-			monkey.X = float.Parse (record.Fields [new NSString ("X")].ToString ());
-			monkey.Y = float.Parse (record.Fields [new NSString ("Y")].ToString ());
-			monkey.Z = int.Parse (record.Fields [new NSString ("Z")].ToString ());
+            monkey.Name = record.Fields ["Name"].ToString ();
+            monkey.Rotation = ((NSNumber)record.Fields ["Rotation"]).FloatValue;
+            monkey.Scale = ((NSNumber)record.Fields ["Scale"]).FloatValue;
+            monkey.X = ((NSNumber)record.Fields ["X"]).FloatValue;
+            monkey.Y =((NSNumber)record.Fields ["Y"]).FloatValue;
+            monkey.Z =((NSNumber)record.Fields ["Z"]).IntValue;
 			return monkey;
 		}
 	}

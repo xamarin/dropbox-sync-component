@@ -140,9 +140,9 @@ namespace Android.Views
 		/// <code>false</code>
 		/// otherwise.
 		/// </returns>
-		public virtual bool IsInProgress()
+		public bool IsInProgress
 		{
-			return mGestureInProgress;
+            get { return mGestureInProgress; }
 		}
 
 		/// <summary>

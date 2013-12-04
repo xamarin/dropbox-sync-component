@@ -13,7 +13,7 @@ namespace MonkeyBox
             fields.Set("Y", Y);
             fields.Set("Z", Z);
             fields.Set("Name", Name);
-            fields.Set("Rotation", Math.PI * Rotation / 180f);
+            fields.Set("Rotation", Math.PI * Rotation / 180f); // In degrees radian.
             fields.Set("Scale", Scale);
             return fields;
         }

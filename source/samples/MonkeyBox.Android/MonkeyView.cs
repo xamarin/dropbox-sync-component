@@ -41,7 +41,6 @@ namespace MonkeyBox.Android
             get {
                 var rect = new RectF(Drawable.Bounds);
                 Matrix.MapRect(rect);
-                Log.Debug(GetType().Name + " " + Monkey.Name + " CurrentBounds", rect.ToString());
                 return new Rect((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
             }
         }

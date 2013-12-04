@@ -1,4 +1,4 @@
-version: 2.0.2
+version: 2.0.2.1
 name: Dropbox Sync
 id: dropboxsync
 publisher: Dropbox, Inc.
@@ -6,7 +6,8 @@ publisher-url: https://www.dropbox.com/developers/sync
 summary: Give your app its own private Dropbox client and leave the syncing to Dropbox.
 libraries:
   ios: source/binding/iOS/DropBoxSync.iOS.dll
-  android: source/binding/Android/DropboxSync.Android.dll
+  android: source/binding/Android/bin/Release/DropboxSync.Android.dll
 samples:
   "iOS Sample. Demonstrates Dropbox Awesomeness on iOS.": "source/samples/DropBoxSyncSampleMTD/DropBoxSyncSampleMTD.sln"
   "iOS MonkeyBox. Demonstrates Dropbox Datastore Awesomeness on iOS.": "source/samples/MonkeyBox/MonkeyBox.sln"
+  "Android MonkeyBox. Demonstrates Dropbox Datastore Awesomeness on Android.": "source/samples/MonkeyBox.Android/MonkeyBox.Android.sln"

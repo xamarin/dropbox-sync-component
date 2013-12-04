@@ -39,7 +39,13 @@ namespace MonkeyBox
 
 		public override void LoadView ()
 		{
-			View = PlayGroundView = new PlayGroundView ();
+            View = PlayGroundView = new PlayGroundView ();
+            if (new Version(MonoTouch.Constants.Version) < new Version(7,0,0)) return;
+            NavigationController.NavigationBar.TintColor = UIColor.FromRGB (0.564f, 0.0f, 0.015f);
+            EdgesForExtendedLayout = UIRectEdge.None;
+            NavigationController.NavigationBar.Translucent = false;
+            NavigationController.NavigationBar.Opaque = true;
+            NavigationController.NavigationBarHidden = true;
 		}
 
 		public void UpdateMonkey(Monkey monkey)
