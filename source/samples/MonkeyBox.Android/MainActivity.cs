@@ -23,7 +23,7 @@ namespace MonkeyBox.Android
     [Activity (Label = "MonkeyBox.Android", MainLauncher = true)]
     public class MainActivity : Activity, ScaleGestureDetector.IOnScaleGestureListener, MoveGestureDetector.IOnMoveGestureListener, RotateGestureDetector.IOnRotateGestureListener, GestureDetector.IOnGestureListener
     {
-        const string DropboxSyncKey    = "YOUR_APP_KEY";
+        const string DropboxSyncKey = "YOUR_APP_KEY";
         const string DropboxSyncSecret = "YOUR_APP_SECRET";
 
         public DBAccountManager Account { get; private set; }
@@ -475,6 +475,15 @@ namespace MonkeyBox.Android
             var queryResults = table.Query ();
 
             var results = queryResults.ToEnumerable<DBRecord>().Where(r => !r.IsDeleted).ToList();
+
+            // If we have more records than we should,
+            // just start fresh.
+            if (results.Count > 6) {
+                foreach (var record in results) {
+                    record.DeleteRecord();
+                }
+            }
+
             Records = results.ToDictionary (x => x.GetString("Name"), x => x);
 
             if (results.Count == 0) {
@@ -506,7 +515,7 @@ namespace MonkeyBox.Android
                     // Generate random monkeys.
                     values.AddRange(Monkey.GetAllMonkeys());
                     foreach(var val in values) {
-                        var record = table.Insert(val.ToFields());
+                        var record = table.GetOrInsert(val.Name, val.ToFields());
                         Records[val.Name] = record;
                     }
                     DropboxDatastore.Sync();

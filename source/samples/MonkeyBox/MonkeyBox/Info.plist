@@ -31,7 +31,7 @@
 			<string>com.xamarin.monkeybox</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>db-YOUR-DropboxSyncKey</string>
+				<string>db-YOUR_APP_KEY</string>
 			</array>
 		</dict>
 	</array>
