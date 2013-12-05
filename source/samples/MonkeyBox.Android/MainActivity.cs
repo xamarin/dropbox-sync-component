@@ -487,11 +487,12 @@ namespace MonkeyBox.Android
                     record.DeleteRecord();
                 }
             }
-
             if (results.Count == 0) {
                 // Generate random monkeys.
                 values.AddRange(Monkey.GetAllMonkeys());
+                Records = new Dictionary<string, DBRecord>();
             } else {
+                Records = results.ToDictionary (x => x.GetString("Name"), x => x);
 
                 // Process existing monkeys.
                 foreach (var row in results) {
