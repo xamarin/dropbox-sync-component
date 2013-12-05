@@ -408,15 +408,16 @@ namespace MonkeyBox.Android
         {
             Log("Updating Dropbox");
 
+            var table = DropboxDatastore.GetTable ("monkeys");
+
             // Update records in local cache.
             if (Records.Count == 0)
             {
-                var table = DropboxDatastore.GetTable ("monkeys");
                 for(var i = 0; i < MainLayout.ChildCount; i++) {
                     var view = (MonkeyView)MainLayout.GetChildAt(i);
                     var monkey = view.Monkey;
                     monkey.Z = i;
-                    var record = table.Insert(monkey.ToFields());
+                    var record = table.GetOrInsert(monkey.Name, monkey.ToFields());
                     Records[monkey.Name] = record;
                 }
             } else {
@@ -425,8 +426,11 @@ namespace MonkeyBox.Android
                     var monkey = view.Monkey;
                     monkey.Z = i;
                     DBRecord record;
-                    Records.TryGetValue (monkey.Name, out record);
-                    record.SetAll (monkey.ToFields());
+                    var hasValue = Records.TryGetValue (monkey.Name, out record);
+                    if (hasValue)
+                        record.SetAll (monkey.ToFields());
+                    else
+                        table.GetOrInsert(monkey.Name, monkey.ToFields());
                 }
             }
 
@@ -484,12 +488,11 @@ namespace MonkeyBox.Android
                 }
             }
 
-            Records = results.ToDictionary (x => x.GetString("Name"), x => x);
-
             if (results.Count == 0) {
                 // Generate random monkeys.
                 values.AddRange(Monkey.GetAllMonkeys());
             } else {
+
                 // Process existing monkeys.
                 foreach (var row in results) {
 
