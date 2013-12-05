@@ -149,7 +149,7 @@ namespace MonkeyBox
 	{
 		public static NSDictionary ToDictionary (this Monkey monkey)
 		{
-			var keys = new NSString[] {
+			var keys = new [] {
 				new NSString("Name"),
 				new NSString("Rotation"),
 				new NSString("Scale"),
@@ -157,14 +157,22 @@ namespace MonkeyBox
 				new NSString ("Y"),
 				new NSString ("Z"),
 			};
-			var values = new NSString[] {
+            var values = new NSObject[] {
 				new NSString(monkey.Name),
-				new NSString(monkey.Rotation.ToString()),
-				new NSString(monkey.Scale.ToString()),
-				new NSString(monkey.X.ToString()),
-				new NSString(monkey.Y.ToString()),
-				new NSString(monkey.Z.ToString()),
+                new NSNumber(monkey.Rotation),
+                new NSNumber(monkey.Scale),
+                new NSNumber(monkey.X),
+                new NSNumber(monkey.Y),
+                new NSNumber(monkey.Z),
 			};
+
+            System.Diagnostics.Debug.Assert(values[0] != null);
+            System.Diagnostics.Debug.Assert(values[1] != null);
+            System.Diagnostics.Debug.Assert(values[2] != null);
+            System.Diagnostics.Debug.Assert(values[3] != null);
+            System.Diagnostics.Debug.Assert(values[4] != null);
+            System.Diagnostics.Debug.Assert(values[5] != null);
+
 			return NSDictionary.FromObjectsAndKeys (values, keys);
 		}
 

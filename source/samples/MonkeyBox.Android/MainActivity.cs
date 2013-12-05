@@ -497,13 +497,13 @@ namespace MonkeyBox.Android
                 // Process existing monkeys.
                 foreach (var row in results) {
 
-                    var fieldTypes = String.Join(", ", row.FieldNames().ToArray().Select(r => row.GetFieldType(r)));
-
                     // Remove any MonkeyBox app data that's still in the old format.
-                    if (fieldTypes == "STRING, STRING, STRING, STRING, STRING, STRING") {
+                    var currentRow = row;
+                    if (row.FieldNames().All(r => currentRow.GetFieldType(r).ToString() == "STRING")) {
                         row.DeleteRecord();
                         continue;
                     }
+
                     values.Add(new Monkey { 
                         Name = row.GetString("Name"),
                         Scale = Convert.ToSingle(row.GetDouble("Scale")),
