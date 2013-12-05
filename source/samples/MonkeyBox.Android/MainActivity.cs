@@ -23,9 +23,8 @@ namespace MonkeyBox.Android
     [Activity (Label = "MonkeyBox.Android", MainLauncher = true)]
     public class MainActivity : Activity, ScaleGestureDetector.IOnScaleGestureListener, MoveGestureDetector.IOnMoveGestureListener, RotateGestureDetector.IOnRotateGestureListener, GestureDetector.IOnGestureListener
     {
-        const string DropboxSyncKey = "twjxmah1ytyhlrj";
-        //"YOUR_APP_SECRET";
-        const string DropboxSyncSecret = "be9562vibydmzip";
+        const string DropboxSyncKey    = "YOUR_APP_KEY";
+        const string DropboxSyncSecret = "YOUR_APP_SECRET";
 
         public DBAccountManager Account { get; private set; }
 
