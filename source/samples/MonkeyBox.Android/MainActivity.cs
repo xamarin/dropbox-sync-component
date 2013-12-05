@@ -15,14 +15,17 @@ using Android.Util;
 using Java.Util;
 using Android.Views;
 using Java.Security;
+using Java.Lang.Reflect;
+using Android.Accounts;
 
 namespace MonkeyBox.Android
 {
     [Activity (Label = "MonkeyBox.Android", MainLauncher = true)]
     public class MainActivity : Activity, ScaleGestureDetector.IOnScaleGestureListener, MoveGestureDetector.IOnMoveGestureListener, RotateGestureDetector.IOnRotateGestureListener, GestureDetector.IOnGestureListener
     {
-        const string DropboxSyncKey    = "YOUR_APP_KEY";
-        const string DropboxSyncSecret = "YOUR_APP_SECRET";
+        const string DropboxSyncKey = "twjxmah1ytyhlrj";
+        //"YOUR_APP_SECRET";
+        const string DropboxSyncSecret = "be9562vibydmzip";
 
         public DBAccountManager Account { get; private set; }
 
@@ -88,21 +91,12 @@ namespace MonkeyBox.Android
                 view.RequestFocus();
             }
 
-            // Setup Dropbox.
-            Account = DBAccountManager.GetInstance (ApplicationContext, DropboxSyncKey, DropboxSyncSecret);     
-            Account.LinkedAccountChanged += (sender, e) => Console.WriteLine (e); // TODO: Restart auth flow.
-
-            if (!Account.HasLinkedAccount) {
-                Account.StartLink (this, (int)RequestCode.LinkToDropboxRequest);
-            } else {
-                StartApp ();
-            }
+            BootstrapDropbox ();
         }
 
         void HandleTouch (object sender, View.TouchEventArgs e)
         {
             var hit = new Rect((int)e.Event.GetX(), (int)e.Event.GetY(), (int)e.Event.RawX + 1, (int)e.Event.RawY + 1);
-            Log ("HandleTouch", "Responding to {0} event for location {1}" , e.Event.Action, hit);
 
             // Figure out which view gets this touch event.
 
@@ -125,7 +119,6 @@ namespace MonkeyBox.Android
                 foreach (var result in ProcessDetectors(e.Event)) {
                     if (result) {
                         handled = true;
-                        Log("HandleTouch", "One or more detectors handled the touch.");
                     }
                 }
             }
@@ -143,7 +136,6 @@ namespace MonkeyBox.Android
                 if (IsWithinCircularBounds(hit, view.CurrentBounds)) {
                     currentView = view;
                     currentView.RequestFocus ();
-                    Log("ViewRespondingToHitTest", "Found owner of {0}", hit);
                     break;
                 }
             }
@@ -323,15 +315,21 @@ namespace MonkeyBox.Android
             return true;
         }
 
-        void StartApp ()
+        void StartApp (DBAccount account = null)
         {
-            InitializeDropbox ();
+            InitializeDropbox (account);
+            Log("StartApp", "Syncing monkies...");
+            DropboxDatastore.Sync();
             Monkeys = GetMonkeys ();
             DrawMonkeys (Monkeys);
         }
 
         void DrawMonkeys (IEnumerable<Monkey> monkeys)
         {
+            if (monkeys == null) {
+                Log("DrawMonkeys", "Oops! Missing our monkies! Try again.");
+                return;
+            }
             var mainLayout = FindViewById (Resource.Id.main) as RelativeLayout;
             if (mainLayout == null) 
                 throw new ApplicationException("Missing our main layout. Please ensure the layout xml is included in the project.");
@@ -359,48 +357,141 @@ namespace MonkeyBox.Android
             }
         }
 
-        void InitializeDropbox ()
+        void BootstrapDropbox ()
         {
-            DropboxDatastore = DBDatastore.OpenDefault (Account.LinkedAccount);
-            DropboxDatastore.DatastoreChanged += (sender, e) =>  {
-                if (e.P0.SyncStatus.HasIncoming)
-                {
-                    Console.WriteLine ("Datastore needs to be re-synced.");
-                    e.P0.Sync ();
-                    Monkeys = GetMonkeys();
-                    DrawMonkeys(Monkeys);
+            // Setup Dropbox.
+            Account = DBAccountManager.GetInstance (ApplicationContext, DropboxSyncKey, DropboxSyncSecret);
+            Account.LinkedAccountChanged += (sender, e) => {
+                if (e.P1.IsLinked)
+                    Log("Account.LinkedAccountChanged", "Now linked to {0}", e.P1 != null ? e.P1.AccountInfo != null ? e.P1.AccountInfo.DisplayName : "nobody" : "null");
+                else {
+                    Log("Account.LinkedAccountChanged", "Now unlinked from {0}", e.P1 != null ? e.P1.AccountInfo != null ? e.P1.AccountInfo.DisplayName : "nobody" : "null");
+                    Account.StartLink(this, (int)RequestCode.LinkToDropboxRequest);
+                    return;
                 }
+                Account = e.P0;
+                StartApp (e.P1);
             };
+            // TODO: Restart auth flow.
+            if (!Account.HasLinkedAccount) {
+                Account.StartLink (this, (int)RequestCode.LinkToDropboxRequest);
+            }
+            else {
+                StartApp ();
+            }
+        }
+
+        void InitializeDropbox (DBAccount account)
+        {
+            Log("InitializeDropbox");
+            if (DropboxDatastore == null || !DropboxDatastore.IsOpen || DropboxDatastore.Manager.IsShutDown) {
+                DropboxDatastore = DBDatastore.OpenDefault (account ?? Account.LinkedAccount);
+                DropboxDatastore.DatastoreChanged += HandleStoreChange;
+            }
+        }
+
+        void HandleStoreChange (object sender, DBDatastore.SyncStatusEventArgs e)
+        {
+            if (e.P0.SyncStatus.HasIncoming)
+            {
+                if (!Account.HasLinkedAccount) {
+                    Log("InitializeDropbox", "Account no longer linked, so abandoning.");
+                    DropboxDatastore.DatastoreChanged -= HandleStoreChange;
+                }
+                Console.WriteLine ("Datastore needs to be re-synced.");
+                DropboxDatastore.Sync ();
+                Monkeys = GetMonkeys();
+                DrawMonkeys(Monkeys);
+            }
         }
 
         void UpdateDropbox ()
         {
             Log("Updating Dropbox");
-            for(var i = 0; i < MainLayout.ChildCount; i++) {
-                var view = (MonkeyView)MainLayout.GetChildAt(i);
-                var monkey = view.Monkey;
-                monkey.Z = i;
-                DBRecord record;
-                Records.TryGetValue (monkey.Name, out record);
-                Console.WriteLine(record);
-                record.SetAll (monkey.ToFields());
+
+            // Update records in local cache.
+            if (Records.Count == 0)
+            {
+                var table = DropboxDatastore.GetTable ("monkeys");
+                for(var i = 0; i < MainLayout.ChildCount; i++) {
+                    var view = (MonkeyView)MainLayout.GetChildAt(i);
+                    var monkey = view.Monkey;
+                    monkey.Z = i;
+                    var record = table.Insert(monkey.ToFields());
+                    Records[monkey.Name] = record;
+                }
+            } else {
+                for(var i = 0; i < MainLayout.ChildCount; i++) {
+                    var view = (MonkeyView)MainLayout.GetChildAt(i);
+                    var monkey = view.Monkey;
+                    monkey.Z = i;
+                    DBRecord record;
+                    Records.TryGetValue (monkey.Name, out record);
+                    record.SetAll (monkey.ToFields());
+                }
             }
 
-            DropboxDatastore.Sync();
+            if (!VerifyStore()) {
+                RestartAuthFlow (); 
+            } else {
+                DropboxDatastore.Sync();
+            }
+        }
+
+        bool VerifyStore ()
+        {
+            if (!DropboxDatastore.IsOpen) {
+                Log ("VerifyStore", "Datastore is NOT open.");
+                return false;
+            }
+            if (DropboxDatastore.Manager.IsShutDown) {
+                Log ("VerifyStore", "Manager is shutdown.");
+                return false;
+            }
+            if (!Account.HasLinkedAccount) {
+                Log ("VerifyStore", "Account was unlinked while we weren't watching.");
+                return false;
+            }
+            return true;
+        }
+
+        void RestartAuthFlow ()
+        {
+            if (Account.HasLinkedAccount)
+                Account.Unlink ();
+            else
+                Account.StartLink (this, (int)RequestCode.LinkToDropboxRequest);
         }
 
         IEnumerable<Monkey> GetMonkeys ()
         {
+            if (!VerifyStore()) {
+                RestartAuthFlow();
+                return null;
+            }
+
+            Log("GetMonkeys", "Getting monkies...");
             var table = DropboxDatastore.GetTable ("monkeys");
             var values = new List<Monkey>(6);
-            var results = table.Query ().AsList ();
+            var queryResults = table.Query ();
+
+            var results = queryResults.ToEnumerable<DBRecord>().Where(r => !r.IsDeleted).ToList();
             Records = results.ToDictionary (x => x.GetString("Name"), x => x);
+
             if (results.Count == 0) {
                 // Generate random monkeys.
                 values.AddRange(Monkey.GetAllMonkeys());
             } else {
                 // Process existing monkeys.
                 foreach (var row in results) {
+
+                    var fieldTypes = String.Join(", ", row.FieldNames().ToArray().Select(r => row.GetFieldType(r)));
+
+                    // Remove any MonkeyBox app data that's still in the old format.
+                    if (fieldTypes == "STRING, STRING, STRING, STRING, STRING, STRING") {
+                        row.DeleteRecord();
+                        continue;
+                    }
                     values.Add(new Monkey { 
                         Name = row.GetString("Name"),
                         Scale = Convert.ToSingle(row.GetDouble("Scale")),
@@ -409,6 +500,17 @@ namespace MonkeyBox.Android
                         Y = Convert.ToSingle(row.GetDouble("Y")),
                         Z = Convert.ToInt32(row.GetLong("Z"))
                     });
+                }
+
+                // Create new MonkeyBox app data if we just removed old data.
+                if (values.Count == 0) {
+                    // Generate random monkeys.
+                    values.AddRange(Monkey.GetAllMonkeys());
+                    foreach(var val in values) {
+                        var record = table.Insert(val.ToFields());
+                        Records[val.Name] = record;
+                    }
+                    DropboxDatastore.Sync();
                 }
             }
 
@@ -421,6 +523,9 @@ namespace MonkeyBox.Android
 
             if (code == RequestCode.LinkToDropboxRequest && resultCode != Result.Canceled) {
                 StartApp();
+            } else {
+                Account.Unlink();
+                BootstrapDropbox ();
             }
         }
 

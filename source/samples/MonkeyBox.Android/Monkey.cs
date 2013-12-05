@@ -9,12 +9,12 @@ namespace MonkeyBox
         public DBFields ToFields ()
         {
             var fields = new DBFields();
-            fields.Set("X", X);
-            fields.Set("Y", Y);
-            fields.Set("Z", Z);
+            fields.Set("X", (double)X);
+            fields.Set("Y", (double)Y);
+            fields.Set("Z", (long)Z);
             fields.Set("Name", Name);
-            fields.Set("Rotation", Math.PI * Rotation / 180f); // In degrees radian.
-            fields.Set("Scale", Scale);
+            fields.Set ("Rotation", Math.PI * Rotation / 180f); // In degrees radian.
+            fields.Set("Scale", (double)Scale);
             return fields;
         }
 
