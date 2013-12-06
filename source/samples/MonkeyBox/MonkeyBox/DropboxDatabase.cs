@@ -16,8 +16,6 @@ namespace MonkeyBox
 
 		static DropboxDatabase shared;
 		
-		NSTimer timer;
-
 		public bool AutoUpdating { get; set; }
 
 		public static DropboxDatabase Shared {
@@ -41,29 +39,21 @@ namespace MonkeyBox
 				return;
 			DBError error;
 			store = DBDatastore.OpenDefaultStoreForAccount (DBAccountManager.SharedManager.LinkedAccount, out error);
-			var sync = store.Sync (out error);
+			store.Sync (out error);
             store.AddObserver (store, () => {
 				LoadData ();
 			});
 			AutoUpdating = true;
-			store.BeginInvokeOnMainThread(()=>{
-				timer = NSTimer.CreateRepeatingScheduledTimer(1,()=>{
-					if(!AutoUpdating)
-						return;
-					store.Sync (out error);
-				});
-			});
-
 		}
 
 		public Dictionary<string,DBRecord> records = new Dictionary<string, DBRecord> ();
 		public Dictionary<string,Monkey> monkeyDictionary = new Dictionary<string, Monkey> ();
 
-		public Task LoadData ()
+        public void LoadData ()
 		{
-			var task = Task.Factory.StartNew (() => {
-				var table = store.GetTable ("monkeys");
-				DBError error = new DBError ();
+            store.BeginInvokeOnMainThread(()=>{
+                var table = store.GetTable ("monkeys");
+				DBError error;
 				var results = table.Query (null, out error);
 				
 				if (results.Length == 0) {
@@ -72,7 +62,6 @@ namespace MonkeyBox
 				}
 				ProccessResults (results);
 			});
-			return task;
 		}
 
 		void ProccessResults (DBRecord[] results)
@@ -129,8 +118,14 @@ namespace MonkeyBox
 		public void Update (Monkey monkey)
 		{
 			DBRecord record;
-			records.TryGetValue (monkey.Name, out record);
-			record.Update (monkey.ToDictionary ());
+            var hasRecord = records.TryGetValue (monkey.Name, out record);
+            var fields = monkey.ToDictionary ();
+            var inserted = false;
+            DBError error;
+            if (hasRecord)
+                record.Update (fields);
+            else
+                store.GetTable("monkeys").GetOrInsertRecord (monkey.Name, fields, inserted, out error);
 			store.SyncAsync ();
 		}
 
@@ -149,31 +144,23 @@ namespace MonkeyBox
 	{
 		public static NSDictionary ToDictionary (this Monkey monkey)
 		{
-			var keys = new [] {
-				new NSString("Name"),
-				new NSString("Rotation"),
-				new NSString("Scale"),
-				new NSString ("X"),
-				new NSString ("Y"),
-				new NSString ("Z"),
-			};
-            var values = new NSObject[] {
-				new NSString(monkey.Name),
-                new NSNumber(monkey.Rotation),
-                new NSNumber(monkey.Scale),
-                new NSNumber(monkey.X),
-                new NSNumber(monkey.Y),
-                new NSNumber(monkey.Z),
-			};
-
-            System.Diagnostics.Debug.Assert(values[0] != null);
-            System.Diagnostics.Debug.Assert(values[1] != null);
-            System.Diagnostics.Debug.Assert(values[2] != null);
-            System.Diagnostics.Debug.Assert(values[3] != null);
-            System.Diagnostics.Debug.Assert(values[4] != null);
-            System.Diagnostics.Debug.Assert(values[5] != null);
-
-			return NSDictionary.FromObjectsAndKeys (values, keys);
+            var keys = new NSString[] {
+                new NSString("Name"),
+                new NSString("Rotation"),
+                new NSString("Scale"),
+                new NSString ("X"),
+                new NSString ("Y"),
+                new NSString ("Z"),
+            };
+            var values = new NSString[] {
+                new NSString(monkey.Name),
+                new NSString(monkey.Rotation.ToString()),
+                new NSString(monkey.Scale.ToString()),
+                new NSString(monkey.X.ToString()),
+                new NSString(monkey.Y.ToString()),
+                new NSString(monkey.Z.ToString()),
+            };
+            return NSDictionary.FromObjectsAndKeys (values, keys);
 		}
 
 		public static Monkey ToMonkey (this DBRecord record)
