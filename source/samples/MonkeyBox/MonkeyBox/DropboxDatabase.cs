@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Threading;
+using System.Net.Mime;
 
 namespace MonkeyBox
 {
@@ -51,7 +52,7 @@ namespace MonkeyBox
 
         public void LoadData ()
 		{
-            store.BeginInvokeOnMainThread(()=>{
+            new NSObject().BeginInvokeOnMainThread(()=>{
                 var table = store.GetTable ("monkeys");
 				DBError error;
 				var results = table.Query (null, out error);
@@ -152,13 +153,13 @@ namespace MonkeyBox
                 new NSString ("Y"),
                 new NSString ("Z"),
             };
-            var values = new NSString[] {
+            var values = new NSObject[] {
                 new NSString(monkey.Name),
-                new NSString(monkey.Rotation.ToString()),
-                new NSString(monkey.Scale.ToString()),
-                new NSString(monkey.X.ToString()),
-                new NSString(monkey.Y.ToString()),
-                new NSString(monkey.Z.ToString()),
+                new NSNumber(monkey.Rotation),
+                new NSNumber(monkey.Scale),
+                new NSNumber(monkey.X),
+                new NSNumber(monkey.Y),
+                new NSNumber(monkey.Z),
             };
             return NSDictionary.FromObjectsAndKeys (values, keys);
 		}
