@@ -15,8 +15,8 @@ namespace MonkeyBox
 	[Register ("AppDelegate")]
 	public partial class AppDelegate : UIApplicationDelegate
 	{
-        const string DropboxSyncKey = "twjxmah1ytyhlrj";
-        const string DropboxSyncSecret = "be9562vibydmzip";
+        const string DropboxSyncKey = "YOUR_APP_KEY";
+        const string DropboxSyncSecret = "YOUR_APP_SECRET";
 
 		// class-level declarations
 		UIWindow window;
