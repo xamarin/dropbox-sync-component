@@ -17,7 +17,7 @@ file "xpkg/xamarin-component.exe" do
 	puts "* Downloading xamarin-component..."
 	mkdir "xpkg"
 	sh "curl -L https://components.xamarin.com/submit/xpkg > xpkg.zip"
-	sh "unzip -o xpkg.zip -d xpkg"
+	sh "unzip -o -q xpkg.zip -d xpkg"
 	sh "rm xpkg.zip"
 end
 
