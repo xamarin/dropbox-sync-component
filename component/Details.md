@@ -4,6 +4,9 @@ The Dropbox Sync API allows you to give your app its own private Dropbox client 
 - Writes are local so changes are immediate. The Sync API syncs to Dropbox behind the scenes.
 - Your app works great even when offline and automatically syncs when it's back online.
 
+### Datastore API (beta)
+
+Keep your app's structured data in sync with Dropbox. These days, your app need to store and sync more than just files. With the Datastore API, structured data like contacts, to-do items, and game state can be synced effortlessly. Datastores work across platforms, offline, and even support automatic conflict resolution.
 
 ## Authenticating with Dropbox
 
